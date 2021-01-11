@@ -1,0 +1,93 @@
+!    -*- f90 -*-
+! Note: the context of this file is case sensitive.
+
+python module fpylapack ! in 
+    interface  ! in :fpylapack
+        subroutine dgels(trans,m,n,nrhs,a,lda,b,ldb,work,lwork,info) ! in :fpylapack:dgels.f
+            character intent(optional, in) :: trans='N'
+            integer intent(hide), depend(a) :: m=shape(a,0)
+            integer intent(hide), depend(a) :: n=shape(a,1)
+            integer intent(hide), depend(b) :: nrhs=shape(b,1)
+            double precision dimension(lda,*), intent(in) :: a
+            integer intent(hide), depend(a) :: lda=shape(a,0)
+            double precision dimension(ldb,*), intent(in, out) :: b
+            integer intent(hide), depend(b, m, n), check(ldb>=max(m,n)) :: ldb=shape(b,0)
+            double precision dimension(lwork), depend(lwork),  intent(cache, hide) :: work
+            integer intent(hide) :: lwork=max( 1, min(m, n) + max(min(m, n), nrhs )*2 )
+            integer intent(hide) :: info
+        end subroutine dgels
+    end interface 
+    interface  ! in :fpylapack
+        subroutine dgeqp3(m,n,a,lda,jpvt,tau,work,lwork,info) ! in :fpylapack:dgeqp3.f
+            integer intent(hide), depend(a) :: m=shape(a,0)
+            integer intent(hide), depend(a) :: n=shape(a,1)
+            double precision dimension(lda,*), intent(in, out) :: a
+            integer intent(hide, in), depend(a) :: lda=shape(a,0)
+            integer dimension(n), intent(out), depend(n) :: jpvt
+            double precision dimension(min(n,m)), intent(out), depend(m,n) :: tau
+            double precision dimension(lwork), intent(cache, hide), depend(lwork) :: work
+            integer intent(hide) :: lwork=2*n+(n+1)*2
+            integer intent(hide) :: info
+        end subroutine dgeqp3
+    end interface 
+    interface  ! in :fpylapack
+        subroutine dorgqr(m,n,k,a,lda,tau,work,lwork,info) ! in :fpylapack:dorgqr.f
+            integer intent(hide), depend(a) :: m=shape(a,0)
+            integer intent(hide), depend(a, k), check(n>=k) :: n=min(shape(a,0), shape(a,1))
+            integer intent(hide), depend(tau) :: k=shape(tau,0)
+            double precision dimension(lda,*), intent(in, out) :: a
+            integer intent(hide), depend(a) :: lda=shape(a,0)
+            double precision dimension(*), intent(in) :: tau
+            double precision dimension(lwork), intent(cache, hide), depend(lwork) :: work
+            integer intent(hide), depend(n) :: lwork=n*2
+            integer intent(hide) :: info
+        end subroutine dorgqr
+    end interface
+    interface  ! in :fpylapack
+        subroutine dormqr(side,trans,m,n,k,a,lda,tau,c,ldc,work,lwork,info) ! in :fpylapack:dormqr.f
+            character intent(optional, in) :: side='L'
+            character intent(optional, in) :: trans='N'
+            integer intent(hide), depend(c) :: m=shape(c,0)
+            integer intent(hide), depend(c) :: n=shape(c,1)
+            integer intent(hide), depend(a) :: k=min(shape(a,0), shape(a,1))
+            double precision dimension(lda,*), intent(in) :: a
+            integer intent(hide), depend(a) :: lda=shape(a,0)
+            double precision dimension(k), intent(in), depend(k,a) :: tau
+            double precision dimension(ldc,*), intent(in, out) :: c
+            integer intent(hide), check(m==ldc), depend(c) :: ldc=shape(c,0)
+            double precision dimension(lwork), depend(lwork),  intent(cache, hide) :: work
+            integer intent(hide) :: lwork=n*2
+            integer intent(hide) :: info
+        end subroutine dormqr
+    end interface 
+    interface  ! in :fpylapack
+        subroutine dtptrs(uplo,trans,diag,n,nrhs,ap,b,ldb,info) ! in :fpylapack:dtptrs.f
+            character intent(optional, in) :: uplo='U' ! upper
+            character intent(optional, in) :: trans='N' ! no transpose
+            character intent(optional, in) :: diag='N' ! not unit on diagonal
+            integer intent(hide), depend(ap) :: n=sqrt(2*shape(ap,0)+0.25)-0.49
+            integer intent(hide), depend(b):: nrhs=shape(b, 1)
+            double precision dimension(*) :: ap
+            double precision dimension(ldb,nrhs), intent(in, out) :: b
+            integer intent(hide), depend(b) :: ldb=shape(b,0)
+            integer intent(hide) :: info
+        end subroutine dtptrs
+    end interface 
+    interface  ! in :fpylapack
+        subroutine dtrtrs(uplo,trans,diag,n,nrhs,a,lda,b,ldb,info) ! in :fpylapack:dtrtrs.f
+            character intent(optional, in) :: uplo='U' ! upper
+            character intent(optional, in) :: trans='N' ! no transpose
+            character intent(optional, in) :: diag='N' ! not unit on diagonal
+            integer intent(hide), depend(a) :: n=shape(a,1)
+            integer intent(hide), depend(b):: nrhs=shape(b, 1)
+            double precision dimension(lda,*), intent(in) :: a
+            integer intent(hide), depend(a) :: lda=shape(a,0)
+            double precision dimension(ldb,nrhs), intent(in, out) :: b
+            integer intent(hide), depend(b) :: ldb=shape(b,0)
+            integer intent(hide) :: info
+        end subroutine dtrtrs
+    end interface 
+end python module fpylapack
+
+! This file was auto-generated with f2py (version:2).
+! See http://cens.ioc.ee/projects/f2py2e/
