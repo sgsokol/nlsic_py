@@ -1,36 +1,27 @@
 nlsic package
 =============
 
-Subpackages
------------
-
-.. toctree::
-
-    nlsic.fpylapack
-    nlsic.nnls_f77
-    nlsic.nnls_f90
-
 Submodules
 ----------
 
-nlsic.lapack\_ssg module
-------------------------
+nlsic\.lapack\_ssg module
+-------------------------
 
 .. automodule:: nlsic.lapack_ssg
     :members:
     :undoc-members:
     :show-inheritance:
 
-nlsic.nlsic module
-------------------
+nlsic\.nlsic module
+-------------------
 
 .. automodule:: nlsic.nlsic
     :members:
     :undoc-members:
     :show-inheritance:
 
-nlsic.nnls module
------------------
+nlsic\.nnls module
+------------------
 
 .. automodule:: nlsic.nnls
     :members:

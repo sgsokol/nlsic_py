@@ -1,6 +1,6 @@
 import numpy as np
 ar2f = np.asfortranarray
-import fpylapack as la
+import nlsic.fpylapack as la
 # print fpylapack.__doc__
 def isar(x):
     return isinstance(x, np.ndarray)

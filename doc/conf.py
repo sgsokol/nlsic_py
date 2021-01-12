@@ -20,8 +20,8 @@
 import os
 import sys
 #sys.path.insert(0, os.path.abspath('/home/sokol/.local/lib/python3.7/site-packages'))
-sys.path.insert(0, '..')
-sys.path.insert(0, '../build/lib.linux-x86_64-3.7')
+#sys.path.insert(0, '..')
+sys.path.insert(0, '~/.local/lib/python3.7/site-packages/')
 
 
 

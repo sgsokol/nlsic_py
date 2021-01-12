@@ -1,5 +1,5 @@
-nlsic_py
-========
+nlsic
+=====
 
 .. toctree::
    :maxdepth: 4
