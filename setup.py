@@ -29,18 +29,18 @@ def configuration(parent_package='', top_path=None):
                          library_dirs=get_library_dirs()
                          )
     res=config.todict()
-    print("res fpy=", res)
+    #print("res fpy=", res)
     #config = Configuration('', parent_package, top_path)
     config.add_extension('nnls_f77',
                          sources=['nnls_f77/nnls_f77.pyf', 'nnls_f77/nnlsr.f', 'nnls_f77/nnls.f'])
     res.update(config.todict())
-    print("res f77=", res)
+    #print("res f77=", res)
     #config = Configuration('', parent_package, top_path)
     config.add_extension('nnls_f90',
                          sources=['nnls_f90/nnls.f90'])
     res.update(config.todict())
     del(res["name"])
-    print("res f90=", res)
+    #print("res f90=", res)
     return res
 
 if __name__ == '__main__':
