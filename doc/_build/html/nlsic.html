@@ -1,0 +1,481 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>nlsic package &#8212; NLSIC 1.3.4 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.3.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="nnls_f77 package" href="nnls_f77.html" />
+    <link rel="prev" title="nlsic" href="modules.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="nnls_f77.html" title="nnls_f77 package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="modules.html" title="nlsic"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">NLSIC 1.3.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">nlsic</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="nlsic-package">
+<h1>nlsic package<a class="headerlink" href="#nlsic-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-nlsic.lapack_ssg">
+<span id="nlsic-lapack-ssg-module"></span><h2>nlsic.lapack_ssg module<a class="headerlink" href="#module-nlsic.lapack_ssg" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="nlsic.lapack_ssg.QR">
+<em class="property">class </em><code class="descclassname">nlsic.lapack_ssg.</code><code class="descname">QR</code><span class="sig-paren">(</span><em>a</em>, <em>rcond=2.220446049250313e-14</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nlsic/lapack_ssg.html#QR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nlsic.lapack_ssg.QR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>QR class for storing and dealing with QR decomposition by lapack.
+Input matrix a and right hand side b are modified by QR() and solve()
+respectivly if they are in fortran storage else a copy is made.
+If you need just to solve a full column rank, overdetermined
+linear system a*x=b and don’t need Q, R, rank and so on, use
+ls_solve(a, b) instead of this class.
+ls_solve() based on dgels lapack routine is slightly quiker for this task</p>
+<dl class="method">
+<dt id="nlsic.lapack_ssg.QR.Null">
+<code class="descname">Null</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/nlsic/lapack_ssg.html#QR.Null"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nlsic.lapack_ssg.QR.Null" title="Permalink to this definition">¶</a></dt>
+<dd><p>Claculate basis (column vectors) of Null space of a.T (nat)
+such that a.T*nat=0. rank(nat)=nrow(a)-rank(a)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nlsic.lapack_ssg.QR.Q">
+<code class="descname">Q</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/nlsic/lapack_ssg.html#QR.Q"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nlsic.lapack_ssg.QR.Q" title="Permalink to this definition">¶</a></dt>
+<dd><p>get Q matrix from QR form returned by lapack</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nlsic.lapack_ssg.QR.Qc">
+<code class="descname">Qc</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/nlsic/lapack_ssg.html#QR.Qc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nlsic.lapack_ssg.QR.Qc" title="Permalink to this definition">¶</a></dt>
+<dd><p>get _complete_ (m x m) Q matrix from QR form returned by lapack</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nlsic.lapack_ssg.QR.R">
+<code class="descname">R</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/nlsic/lapack_ssg.html#QR.R"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nlsic.lapack_ssg.QR.R" title="Permalink to this definition">¶</a></dt>
+<dd><p>get R matrix from QR form returned by lapack</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nlsic.lapack_ssg.QR.qty">
+<code class="descname">qty</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nlsic/lapack_ssg.html#QR.qty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nlsic.lapack_ssg.QR.qty" title="Permalink to this definition">¶</a></dt>
+<dd><p>multiply Qt*y</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nlsic.lapack_ssg.QR.qy">
+<code class="descname">qy</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nlsic/lapack_ssg.html#QR.qy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nlsic.lapack_ssg.QR.qy" title="Permalink to this definition">¶</a></dt>
+<dd><p>multiply Q*y (y is modified in place if F-contiguous</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nlsic.lapack_ssg.QR.solve">
+<code class="descname">solve</code><span class="sig-paren">(</span><em>b=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nlsic/lapack_ssg.html#QR.solve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nlsic.lapack_ssg.QR.solve" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="nlsic.lapack_ssg.isar">
+<code class="descclassname">nlsic.lapack_ssg.</code><code class="descname">isar</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nlsic/lapack_ssg.html#isar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nlsic.lapack_ssg.isar" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="exception">
+<dt id="nlsic.lapack_ssg.lapack_ssg">
+<em class="property">exception </em><code class="descclassname">nlsic.lapack_ssg.</code><code class="descname">lapack_ssg</code><a class="reference internal" href="_modules/nlsic/lapack_ssg.html#lapack_ssg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nlsic.lapack_ssg.lapack_ssg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">Exception</span></code></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="nlsic.lapack_ssg.ls_solve">
+<code class="descclassname">nlsic.lapack_ssg.</code><code class="descname">ls_solve</code><span class="sig-paren">(</span><em>a</em>, <em>b</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nlsic/lapack_ssg.html#ls_solve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nlsic.lapack_ssg.ls_solve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wraper for lapack dgels routine.
+Solve over- or under-determined linear system a*x=b by QR or LR decomposition
+return x which has dimensions nrow(x)==ncol(a) and ncol(x)==ncol(b).
+Thus, multiple right hand sides in b are allowed.
+If a has been already QR factorized by QR(a), you can use qra.solve(b)
+where qra is a QR instance.
+If the system is under-determined, the least norm solution is returned.
+If a and b are F-contiguous they are modified “in place”.
+You may want to protect them by copying before call.
+If a and b are _not_ F-contiguous they are copied inside the call to dgels
+(a warning is printed on stderr if -DF2PY_REPORT_ON_ARRAY_COPY was set
+during f2py compiling) so the original a and b are _not_ modified</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="nlsic.lapack_ssg.tri_solve">
+<code class="descclassname">nlsic.lapack_ssg.</code><code class="descname">tri_solve</code><span class="sig-paren">(</span><em>a</em>, <em>b</em>, <em>uplo='U'</em>, <em>trans='N'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nlsic/lapack_ssg.html#tri_solve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nlsic.lapack_ssg.tri_solve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Solve triangular system a*x=b or at*x=b (trans=’N’ or ‘T’)
+The matrix a can represent upper or lower triangular system (uplo=’U’ or ‘L’)
+Other part of rectangular matrix a is not referenced.
+b is modified “in place” if it is F-contiguous.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-nlsic.nlsic">
+<span id="nlsic-nlsic-module"></span><h2>nlsic.nlsic module<a class="headerlink" href="#module-nlsic.nlsic" title="Permalink to this headline">¶</a></h2>
+<p>A set of functions for solving Non-linear Least Squares with Inequality constraints.
+Main function is <code class="docutils literal"><span class="pre">nlsic(...)</span></code></p>
+<dl class="class">
+<dt id="nlsic.nlsic.Obj">
+<em class="property">class </em><code class="descclassname">nlsic.nlsic.</code><code class="descname">Obj</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nlsic/nlsic.html#Obj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nlsic.nlsic.Obj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>tarnsform a dictionnary into object to allow access like o.field</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="nlsic.nlsic.cV">
+<code class="descclassname">nlsic.nlsic.</code><code class="descname">cV</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nlsic/nlsic.html#cV"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nlsic.nlsic.cV" title="Permalink to this definition">¶</a></dt>
+<dd><p>converts x to column vector (as matrix with one column)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="nlsic.nlsic.nlsic">
+<code class="descclassname">nlsic.nlsic.</code><code class="descname">nlsic</code><span class="sig-paren">(</span><em>par</em>, <em>r</em>, <em>u=None</em>, <em>co=None</em>, <em>control={}</em>, <em>e=None</em>, <em>eco=None</em>, <em>flsi=&lt;function lsi&gt;</em>, <em>*kargs</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nlsic/nlsic.html#nlsic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nlsic.nlsic.nlsic" title="Permalink to this definition">¶</a></dt>
+<dd><p>solve non linear least square problem min of ||r(par,*kargs, **kwargs).res||_2
+with optional inequality constraints u*par&gt;=co
+and optional equality constraints e*par=eco</p>
+<p><em>Method</em> sequential lsi globalized by backtracking technique. If e, eco are not None, reduce jacobian before lsi() call.</p>
+<p><em>Notes</em> If function r() return an object having attribute “jacobian”
+when cjac==True it is supposed to be equal to a matrix jacobian dr_dpar.
+Else numerical derivation is used for its construction.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>par</strong> (<em>numpy array</em><em> (</em><em>float64</em><em>)</em>) – initial values for parameter vector (can be in non feasible domain)
+At return it contains the result vector (i.e. modified in-place).</li>
+<li><strong>r</strong> (<em>function</em>) – <p>function calculating residual vector
+by a call to r(par, cjac=True|False, *kargs, **kwargs)
+where</p>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">par:</th><td class="field-body">is a current parameter vector,</td>
+</tr>
+<tr class="field-even field"><th class="field-name">cjac:</th><td class="field-body">is logical indicating if we need or not a Jacobean together with residuals.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">*kargs:</th><td class="field-body">positional parameters passed through to r()</td>
+</tr>
+<tr class="field-even field"><th class="field-name">**kwargs:</th><td class="field-body">keyword=value parameters passed through to r()</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p>The call to r() must return an oject having an attribute “res”
+containing the residual vector and optionnaly an attribute “jacobian”
+when cjac is set to TRUE.</p>
+</li>
+<li><strong>u</strong> (<em>numpy matrix</em><em> (</em><em>float64</em><em>)</em><em>, </em><em>optional</em>) – linear inequality constraint matrix in u*par&gt;=co. Defaults to None.</li>
+<li><strong>co</strong> (<em>numpy vector</em><em> (</em><em>float64</em><em>)</em><em>, </em><em>optional</em>) – inequality constraints vector</li>
+<li><strong>controls</strong> (<em>dict</em><em>, </em><em>optional</em>) – <p>control parameters (=default values which is assumed if an entry is missing):</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">tolx=1.e-7:</th><td class="field-body">error on L2 norm of the iteration step sqrt(pt*p).</td>
+</tr>
+<tr class="field-even field"><th class="field-name">maxit=100:</th><td class="field-body">maximum of newton iterations</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">btstart=1.:</th><td class="field-body">(0;1) starting value for backtracking</td>
+</tr>
+<tr class="field-even field"><th class="field-name">btfrac=0.5:</th><td class="field-body">(0;1) by this value we diminish the step till tight up to the quadratic model of norm reduction in backtrack (bt) iterations</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">btdesc=0.5:</th><td class="field-body">(0;1) how good we have to tight up to the quadratic model. 0-we are very relax, 1 we are very close (may need many bt iterations)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">btmaxit=15:</th><td class="field-body">maximum of backtrack iterations</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">trace=0:</th><td class="field-body">print tracing information on stdout</td>
+</tr>
+</tbody>
+</table>
+<p>Defaults to empty dict {} which is equivalent to the above default values.</p>
+</li>
+<li><strong>e</strong> (<em>numpy matrix</em><em> (</em><em>float64</em><em>)</em><em>, </em><em>optional</em>) – linear equality constraint matrix in e*par=eco. Defaults to None.</li>
+<li><strong>eco</strong> (<em>numpy vector</em><em> (</em><em>float64</em><em>)</em><em>, </em><em>optional</em>) – equality constraints vector</li>
+<li><strong>flsi</strong> (<em>function</em>) – solution of least squares with inequality constraints. Defaults to nlsic.lsi. Can be nlsic.lsi_ln if least norm increment is required.</li>
+<li><strong>kargs</strong> (<em>list</em><em>, </em><em>optional</em>) – optional positional arguments to be passed through to r function</li>
+<li><strong>kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – optional keyword=value parameters to pass through to r function</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><p>result Object with the following fields:</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">par:</th><td class="field-body">resulting parameter vector</td>
+</tr>
+<tr class="field-even field"><th class="field-name">laststep:</th><td class="field-body">last increment after a possible back-tracking contraction</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">normp:</th><td class="field-body">L2 norm of the last increment before back-tracking</td>
+</tr>
+<tr class="field-even field"><th class="field-name">res:</th><td class="field-body">last residual vector</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">prevres:</th><td class="field-body">previous residual vector</td>
+</tr>
+<tr class="field-even field"><th class="field-name">indx:</th><td class="field-body">vector of p and z sets. indx[:nsetp] is a p-set indexes, while indx[nsetp:] is z-set indexes</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">nsetp:</th><td class="field-body">size of p-set.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">it:</th><td class="field-body">number of non-linear iterations</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">btit:</th><td class="field-body">number of back-tracking iterations at the last non linear iteration</td>
+</tr>
+<tr class="field-even field"><th class="field-name">error:</th><td class="field-body">execution error code: 0 means no error occurred</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">a:</th><td class="field-body">last Jacobean calculated</td>
+</tr>
+<tr class="field-even field"><th class="field-name">nte:</th><td class="field-body">null-space basis matrix if e is provided</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">mes:</th><td class="field-body">if error != 0, then str with informative message.</td>
+</tr>
+</tbody>
+</table>
+</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Object</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="exception">
+<dt id="nlsic.nlsic.nlsicError">
+<em class="property">exception </em><code class="descclassname">nlsic.nlsic.</code><code class="descname">nlsicError</code><a class="reference internal" href="_modules/nlsic/nlsic.html#nlsicError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nlsic.nlsic.nlsicError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">Exception</span></code></p>
+<p>custom error class</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="nlsic.nlsic.norm2">
+<code class="descclassname">nlsic.nlsic.</code><code class="descname">norm2</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nlsic/nlsic.html#norm2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nlsic.nlsic.norm2" title="Permalink to this definition">¶</a></dt>
+<dd><p>L2 vector norm</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="nlsic.nlsic.numdif">
+<code class="descclassname">nlsic.nlsic.</code><code class="descname">numdif</code><span class="sig-paren">(</span><em>f</em>, <em>x</em>, <em>*kargs</em>, <em>**kwrags</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nlsic/nlsic.html#numdif"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nlsic.nlsic.numdif" title="Permalink to this definition">¶</a></dt>
+<dd><p>numericaly derivate vector function f at point x (by central diff)
+and return its Jacobian dfi_dxj</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-nlsic.nnls">
+<span id="nlsic-nnls-module"></span><h2>nlsic.nnls module<a class="headerlink" href="#module-nlsic.nnls" title="Permalink to this headline">¶</a></h2>
+<p>This module provides solvers for linear system
+with inequality constraints. Theay are based on
+nnls algorithm and software originaly designed
+and (re)written in Fortran77 by [Lawson &amp; al, 1974].</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">nnls:</th><td class="field-body">solve Non Negative Least Square problem a*x~b, subject to x_i &gt;= 0 for all indexes i</td>
+</tr>
+<tr class="field-even field"><th class="field-name">ldp:</th><td class="field-body">solve Least Distance Problem x~0 subject to u*x&gt;=c. LDP is solved by reducing this problem to nnls problem.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">lsi:</th><td class="field-body">solve Least Square problem with Inequality constraints a*x~b subject to u*x&gt;=c. LSI problem is solved by reducing it to ldp problem. If matrices a and u are F-contiguous, they can be modified “in place”.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">lsi_ln:</th><td class="field-body">the same as lsi but find least norm solution for rank-deficient matrix a.</td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="nlsic.nnls.Obj">
+<em class="property">class </em><code class="descclassname">nlsic.nnls.</code><code class="descname">Obj</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nlsic/nnls.html#Obj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nlsic.nnls.Obj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>tarnsform a dictionnary into object to allow access like obj.field</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="nlsic.nnls.cV">
+<code class="descclassname">nlsic.nnls.</code><code class="descname">cV</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nlsic/nnls.html#cV"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nlsic.nnls.cV" title="Permalink to this definition">¶</a></dt>
+<dd><p>converts x to column vector (as matrix with one column)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="nlsic.nnls.ldp">
+<code class="descclassname">nlsic.nnls.</code><code class="descname">ldp</code><span class="sig-paren">(</span><em>u</em>, <em>co</em>, <em>indx=None</em>, <em>nsetp=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nlsic/nnls.html#ldp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nlsic.nnls.ldp" title="Permalink to this definition">¶</a></dt>
+<dd><p>solve Least Distance Problem: min(x**2) subject to u*x&gt;=co
+by reducing it to nnls problem.
+Params:
+u - m x n real matrix, m &lt;= n, u is of full rank
+co - m real vector
+indx - m int vector
+nsetp - 1 int vector
+Return a real vector of lenght n.
+indx and nsetp are modified in place.
+Raise an exception if constraints are unfeasible
+u and co are not modified.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="nlsic.nnls.lsi">
+<code class="descclassname">nlsic.nnls.</code><code class="descname">lsi</code><span class="sig-paren">(</span><em>a</em>, <em>b</em>, <em>u=None</em>, <em>co=None</em>, <em>indx=None</em>, <em>nsetp=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nlsic/nnls.html#lsi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nlsic.nnls.lsi" title="Permalink to this definition">¶</a></dt>
+<dd><p>solve linear Least Square problem (min ||a*x-b||)
+subject to Inequalities u*x&gt;=co by reducing it to LDP problem
+Return x
+indx, nsetp are modified in place.
+a and b are modified in place too.
+Raise an exception if a is not of full rank</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="nlsic.nnls.lsi_ln">
+<code class="descclassname">nlsic.nnls.</code><code class="descname">lsi_ln</code><span class="sig-paren">(</span><em>a</em>, <em>b</em>, <em>u=None</em>, <em>co=None</em>, <em>indx=None</em>, <em>nsetp=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nlsic/nnls.html#lsi_ln"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nlsic.nnls.lsi_ln" title="Permalink to this definition">¶</a></dt>
+<dd><p>solve linear Least Square problem (min ||a*x-b||)
+subject to Inequalities u*x&gt;=co by reducing it to LDP problem
+If matrix a is not of full rank, a least norm solution is provided.
+Return x
+indx, nsetp are modified in place.
+a and b are modified in place too.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="nlsic.nnls.nnls">
+<code class="descclassname">nlsic.nnls.</code><code class="descname">nnls</code><span class="sig-paren">(</span><em>a</em>, <em>b</em>, <em>indx=None</em>, <em>nsetp=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nlsic/nnls.html#nnls"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nlsic.nnls.nnls" title="Permalink to this definition">¶</a></dt>
+<dd><p>wrapper for nnlsf call</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>a</strong> – m x n real matrix, m &gt;= n</li>
+<li><strong>b</strong> – m x 1</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><p>an object with fields:</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">x:</th><td class="field-body">solution vector of length n</td>
+</tr>
+<tr class="field-even field"><th class="field-name">rnorm:</th><td class="field-body">norm of residual ax-b</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">w:</th><td class="field-body">the dual solution vector of length n. w will satisfy w[i] = 0. for all i in set p  and w[i] &lt;= 0. for all i in set z ,</td>
+</tr>
+<tr class="field-even field"><th class="field-name">indx:</th><td class="field-body">p and z set. indx[:nsetp] is a p-set indexes, while indx[nsetp:] is z-set indexes</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">nsetp:</th><td class="field-body">p and z set separator in indx</td>
+</tr>
+</tbody>
+</table>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="exception">
+<dt id="nlsic.nnls.nnlsError">
+<em class="property">exception </em><code class="descclassname">nlsic.nnls.</code><code class="descname">nnlsError</code><a class="reference internal" href="_modules/nlsic/nnls.html#nnlsError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nlsic.nnls.nnlsError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">Exception</span></code></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-nlsic">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-nlsic" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="modules.html"
+                        title="previous chapter">nlsic</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="nnls_f77.html"
+                        title="next chapter">nnls_f77 package</a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="nnls_f77.html" title="nnls_f77 package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="modules.html" title="nlsic"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">NLSIC 1.3.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >nlsic</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, INRAE/INSA/CNRS.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.7.
+    </div>
+  </body>
+</html>

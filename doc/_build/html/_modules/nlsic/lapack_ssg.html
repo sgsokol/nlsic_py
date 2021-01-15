@@ -1,0 +1,234 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>nlsic.lapack_ssg &#8212; NLSIC 1.3.4 documentation</title>
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.3.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NLSIC 1.3.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for nlsic.lapack_ssg</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">ar2f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asfortranarray</span>
+<span class="kn">import</span> <span class="nn">nlsic.fpylapack</span> <span class="k">as</span> <span class="nn">la</span>
+<span class="c1"># print fpylapack.__doc__</span>
+<div class="viewcode-block" id="isar"><a class="viewcode-back" href="../../nlsic.html#nlsic.lapack_ssg.isar">[docs]</a><span class="k">def</span> <span class="nf">isar</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span></div>
+<div class="viewcode-block" id="lapack_ssg"><a class="viewcode-back" href="../../nlsic.html#nlsic.lapack_ssg.lapack_ssg">[docs]</a><span class="k">class</span> <span class="nc">lapack_ssg</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+<div class="viewcode-block" id="QR"><a class="viewcode-back" href="../../nlsic.html#nlsic.lapack_ssg.QR">[docs]</a><span class="k">class</span> <span class="nc">QR</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;QR class for storing and dealing with QR decomposition by lapack.</span>
+<span class="sd">    Input matrix a and right hand side b are modified by QR() and solve()</span>
+<span class="sd">    respectivly if they are in fortran storage else a copy is made.</span>
+<span class="sd">    If you need just to solve a full column rank, overdetermined</span>
+<span class="sd">    linear system a*x=b and don&#39;t need Q, R, rank and so on, use</span>
+<span class="sd">    ls_solve(a, b) instead of this class.</span>
+<span class="sd">    ls_solve() based on dgels lapack routine is slightly quiker for this task&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">rcond</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">eps</span><span class="o">*</span><span class="mi">100</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nrow</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncol</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span>
+        <span class="c1"># make factorization</span>
+        <span class="c1"># NB: q and r are permuted (permutation is given by pivot)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">qr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pivot</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tau</span> <span class="o">=</span> <span class="n">la</span><span class="o">.</span><span class="n">dgeqp3</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pivot</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">qr</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rank</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">*</span><span class="n">rcond</span><span class="p">)</span>
+        <span class="c1"># packed upper triangular</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rp</span> <span class="o">=</span> <span class="n">ar2f</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">qr</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">tri</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ncol</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nrow</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)])</span>
+
+<div class="viewcode-block" id="QR.Q"><a class="viewcode-back" href="../../nlsic.html#nlsic.lapack_ssg.QR.Q">[docs]</a>    <span class="k">def</span> <span class="nf">Q</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;get Q matrix from QR form returned by lapack&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Qc</span><span class="p">()</span>
+            <span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">qc</span><span class="p">[:,</span> <span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">ncol</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="s2">&quot;f&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">q</span> <span class="o">=</span> <span class="n">q</span>
+        <span class="k">return</span> <span class="n">q</span></div>
+
+<div class="viewcode-block" id="QR.Qc"><a class="viewcode-back" href="../../nlsic.html#nlsic.lapack_ssg.QR.Qc">[docs]</a>    <span class="k">def</span> <span class="nf">Qc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;get _complete_ (m x m) Q matrix from QR form returned by lapack&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">qc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">qc</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="c1">#qc = self.qr.copy(&quot;f&quot;)</span>
+            <span class="c1">#qc = np.resize(qc, (self.nrow, self.nrow))</span>
+            <span class="c1">##qc=la.dormqr(self.qr, self.tau, np.mat(np.eye(self.nrow)).T)</span>
+            <span class="c1">#qc = la.dorgqr(qc, self.tau)</span>
+            <span class="n">qc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">qy</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nrow</span><span class="p">))</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="s2">&quot;f&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">qc</span> <span class="o">=</span> <span class="n">qc</span>
+        <span class="k">return</span> <span class="n">qc</span></div>
+
+<div class="viewcode-block" id="QR.R"><a class="viewcode-back" href="../../nlsic.html#nlsic.lapack_ssg.QR.R">[docs]</a>    <span class="k">def</span> <span class="nf">R</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;get R matrix from QR form returned by lapack&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">r</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncol</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">triu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">qr</span><span class="p">[:</span><span class="n">n</span><span class="p">,</span> <span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r</span> <span class="o">=</span> <span class="n">r</span>
+        <span class="k">return</span> <span class="n">r</span></div>
+
+<div class="viewcode-block" id="QR.solve"><a class="viewcode-back" href="../../nlsic.html#nlsic.lapack_ssg.QR.solve">[docs]</a>    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">b</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mat</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nrow</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">la</span><span class="o">.</span><span class="n">dtrtrs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">qr</span><span class="p">,</span> <span class="n">la</span><span class="o">.</span><span class="n">dormqr</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">qr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tau</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">trans</span><span class="o">=</span><span class="s1">&#39;T&#39;</span><span class="p">))[:</span><span class="bp">self</span><span class="o">.</span><span class="n">ncol</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+        <span class="n">x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pivot</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">s</span>
+        <span class="k">return</span> <span class="n">x</span></div>
+
+<div class="viewcode-block" id="QR.qy"><a class="viewcode-back" href="../../nlsic.html#nlsic.lapack_ssg.QR.qy">[docs]</a>    <span class="k">def</span> <span class="nf">qy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;multiply Q*y (y is modified in place if F-contiguous&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">la</span><span class="o">.</span><span class="n">dormqr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">qr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tau</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">trans</span><span class="o">=</span><span class="s1">&#39;N&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="QR.qty"><a class="viewcode-back" href="../../nlsic.html#nlsic.lapack_ssg.QR.qty">[docs]</a>    <span class="k">def</span> <span class="nf">qty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;multiply Qt*y&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">la</span><span class="o">.</span><span class="n">dormqr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">qr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tau</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">trans</span><span class="o">=</span><span class="s1">&#39;T&#39;</span><span class="p">)[:</span><span class="bp">self</span><span class="o">.</span><span class="n">ncol</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="QR.Null"><a class="viewcode-back" href="../../nlsic.html#nlsic.lapack_ssg.QR.Null">[docs]</a>    <span class="k">def</span> <span class="nf">Null</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Claculate basis (column vectors) of Null space of a.T (nat)</span>
+<span class="sd">        such that a.T*nat=0. rank(nat)=nrow(a)-rank(a)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">null</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">null</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Qc</span><span class="p">()[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">:])</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">null</span></div></div>
+<div class="viewcode-block" id="ls_solve"><a class="viewcode-back" href="../../nlsic.html#nlsic.lapack_ssg.ls_solve">[docs]</a><span class="k">def</span> <span class="nf">ls_solve</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Wraper for lapack dgels routine.</span>
+<span class="sd">    Solve over- or under-determined linear system a*x=b by QR or LR decomposition</span>
+<span class="sd">    return x which has dimensions nrow(x)==ncol(a) and ncol(x)==ncol(b).</span>
+<span class="sd">    Thus, multiple right hand sides in b are allowed.</span>
+<span class="sd">    If a has been already QR factorized by QR(a), you can use qra.solve(b)</span>
+<span class="sd">    where qra is a QR instance.</span>
+<span class="sd">    If the system is under-determined, the least norm solution is returned.</span>
+<span class="sd">    If a and b are F-contiguous they are modified &quot;in place&quot;.</span>
+<span class="sd">    You may want to protect them by copying before call.</span>
+<span class="sd">    If a and b are _not_ F-contiguous they are copied inside the call to dgels</span>
+<span class="sd">    (a warning is printed on stderr if -DF2PY_REPORT_ON_ARRAY_COPY was set</span>
+<span class="sd">    during f2py compiling) so the original a and b are _not_ modified&quot;&quot;&quot;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">la</span><span class="o">.</span><span class="n">dgels</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">x</span><span class="p">[:</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span></div>
+<div class="viewcode-block" id="tri_solve"><a class="viewcode-back" href="../../nlsic.html#nlsic.lapack_ssg.tri_solve">[docs]</a><span class="k">def</span> <span class="nf">tri_solve</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">uplo</span><span class="o">=</span><span class="s1">&#39;U&#39;</span><span class="p">,</span> <span class="n">trans</span><span class="o">=</span><span class="s1">&#39;N&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Solve triangular system a*x=b or at*x=b (trans=&#39;N&#39; or &#39;T&#39;)</span>
+<span class="sd">    The matrix a can represent upper or lower triangular system (uplo=&#39;U&#39; or &#39;L&#39;)</span>
+<span class="sd">    Other part of rectangular matrix a is not referenced.</span>
+<span class="sd">    b is modified &quot;in place&quot; if it is F-contiguous.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">la</span><span class="o">.</span><span class="n">dtrtrs</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">uplo</span><span class="o">=</span><span class="n">uplo</span><span class="p">,</span> <span class="n">trans</span><span class="o">=</span><span class="n">trans</span><span class="p">)</span></div>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">time</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="mi">100</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">n</span>
+    <span class="n">decimal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">precision</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
+    <span class="n">a</span> <span class="o">*=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asmatrix</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">x_true</span> <span class="o">=</span> <span class="n">ar2f</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asmatrix</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">ar2f</span><span class="p">(</span><span class="n">a</span><span class="o">*</span><span class="n">x_true</span><span class="p">)</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">ls_solve</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="s1">&#39;F&#39;</span><span class="p">),</span> <span class="n">b</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="s1">&#39;F&#39;</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;time for ls_solve()=&quot;</span><span class="p">,</span> <span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t</span><span class="p">,</span> <span class="s2">&quot;s&quot;</span><span class="p">)</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_array_almost_equal</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x_true</span><span class="p">,</span> <span class="n">decimal</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;n=&quot;</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="s2">&quot;; max err=&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">x</span><span class="o">-</span><span class="n">x_true</span><span class="p">)))</span>
+    <span class="c1"># test if the result is the same</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">QR</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="s1">&#39;F&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="s1">&#39;F&#39;</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;time for QR().solve()=&quot;</span><span class="p">,</span> <span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t</span><span class="p">,</span> <span class="s2">&quot;s&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;n=&quot;</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="s2">&quot;; max err=&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">x</span><span class="o">-</span><span class="n">x_true</span><span class="p">)))</span>
+    <span class="c1"># print &quot;x,x_true=&quot;, x, x_true</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_array_almost_equal</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x_true</span><span class="p">,</span> <span class="n">decimal</span><span class="p">)</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">QR</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="s1">&#39;F&#39;</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;time for QR()=&quot;</span><span class="p">,</span> <span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t</span><span class="p">,</span> <span class="s2">&quot;s&quot;</span><span class="p">)</span>
+    <span class="n">qa</span> <span class="o">=</span> <span class="n">QR</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="s1">&#39;F&#39;</span><span class="p">))</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">qa</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;time for qa.solve()=&quot;</span><span class="p">,</span> <span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t</span><span class="p">,</span> <span class="s2">&quot;s&quot;</span><span class="p">)</span>
+    <span class="c1"># test Null space</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+    <span class="n">na</span> <span class="o">=</span> <span class="n">qa</span><span class="o">.</span><span class="n">Null</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;time for Null()=&quot;</span><span class="p">,</span> <span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t</span><span class="p">,</span> <span class="s2">&quot;s&quot;</span><span class="p">)</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_array_almost_equal</span><span class="p">(</span>
+        <span class="n">a</span><span class="o">.</span><span class="n">T</span><span class="o">*</span><span class="n">qa</span><span class="o">.</span><span class="n">Null</span><span class="p">(),</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">qa</span><span class="o">.</span><span class="n">ncol</span><span class="p">,</span> <span class="n">qa</span><span class="o">.</span><span class="n">nrow</span><span class="o">-</span><span class="n">qa</span><span class="o">.</span><span class="n">rank</span><span class="p">)),</span> <span class="n">decimal</span><span class="p">)</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_array_almost_equal</span><span class="p">(</span><span class="n">QR</span><span class="p">(</span><span class="n">na</span><span class="p">)</span><span class="o">.</span><span class="n">rank</span><span class="p">,</span> <span class="n">qa</span><span class="o">.</span><span class="n">nrow</span><span class="o">-</span><span class="n">qa</span><span class="o">.</span><span class="n">rank</span><span class="p">,</span> <span class="n">decimal</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NLSIC 1.3.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, INRAE/INSA/CNRS.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.7.
+    </div>
+  </body>
+</html>

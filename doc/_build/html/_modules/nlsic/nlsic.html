@@ -1,0 +1,403 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>nlsic.nlsic &#8212; NLSIC 1.3.4 documentation</title>
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.3.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NLSIC 1.3.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for nlsic.nlsic</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;A set of functions for solving Non-linear Least Squares with Inequality constraints.</span>
+<span class="sd">Main function is ``nlsic(...)``</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">ar2f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asfortranarray</span>
+<span class="nb">any</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span>
+<span class="n">sqrt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span>
+<span class="n">teq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_array_almost_equal</span>
+
+<span class="kn">import</span> <span class="nn">numpy.linalg</span> <span class="k">as</span> <span class="nn">la</span>
+<span class="n">norm</span> <span class="o">=</span> <span class="n">la</span><span class="o">.</span><span class="n">norm</span>
+
+<span class="kn">import</span> <span class="nn">nlsic.lapack_ssg</span> <span class="k">as</span> <span class="nn">las</span>
+<span class="n">QR</span> <span class="o">=</span> <span class="n">las</span><span class="o">.</span><span class="n">QR</span>
+<span class="kn">from</span> <span class="nn">nlsic.nnls</span> <span class="kn">import</span> <span class="n">lsi</span><span class="p">,</span> <span class="n">lsi_ln</span><span class="p">,</span> <span class="n">ldp</span>
+<div class="viewcode-block" id="nlsicError"><a class="viewcode-back" href="../../nlsic.html#nlsic.nlsic.nlsicError">[docs]</a><span class="k">class</span> <span class="nc">nlsicError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="s2">&quot;custom error class&quot;</span>
+    <span class="k">pass</span></div>
+<div class="viewcode-block" id="Obj"><a class="viewcode-back" href="../../nlsic.html#nlsic.nlsic.Obj">[docs]</a><span class="k">class</span> <span class="nc">Obj</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    tarnsform a dictionnary into object to allow access like o.field</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span></div>
+<div class="viewcode-block" id="cV"><a class="viewcode-back" href="../../nlsic.html#nlsic.nlsic.cV">[docs]</a><span class="k">def</span> <span class="nf">cV</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;converts x to column vector (as matrix with one column)&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span></div>
+<div class="viewcode-block" id="numdif"><a class="viewcode-back" href="../../nlsic.html#nlsic.nlsic.numdif">[docs]</a><span class="k">def</span> <span class="nf">numdif</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">kargs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwrags</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    numericaly derivate vector function f at point x (by central diff)</span>
+<span class="sd">    and return its Jacobian dfi_dxj</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">eps2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">eps</span>
+    <span class="n">eps</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">eps2</span><span class="p">)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">xh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">*</span><span class="n">eps</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="n">eps</span> <span class="k">if</span> <span class="n">h</span> <span class="o">&lt;=</span> <span class="n">eps2</span> <span class="k">else</span> <span class="n">h</span>
+        <span class="n">xh</span><span class="o">.</span><span class="n">flat</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="n">xh</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">+=</span> <span class="n">h</span>
+        <span class="n">fh</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">xh</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">j</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">jac</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mat</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">fh</span><span class="p">),</span> <span class="n">n</span><span class="p">)))</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="s2">&quot;f&quot;</span><span class="p">)</span>
+        <span class="n">jac</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">flat</span> <span class="o">=</span> <span class="n">fh</span>
+        <span class="n">xh</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">-=</span> <span class="n">h</span><span class="o">+</span><span class="n">h</span>
+        <span class="n">jac</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">flat</span> <span class="o">=</span> <span class="p">(</span><span class="n">jac</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span><span class="o">-</span><span class="n">cV</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">xh</span><span class="p">)))</span><span class="o">/</span><span class="p">(</span><span class="n">h</span><span class="o">+</span><span class="n">h</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">jac</span></div>
+<div class="viewcode-block" id="norm2"><a class="viewcode-back" href="../../nlsic.html#nlsic.nlsic.norm2">[docs]</a><span class="k">def</span> <span class="nf">norm2</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="s2">&quot;L2 vector norm&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">flat</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">flat</span><span class="p">)</span></div>
+<div class="viewcode-block" id="nlsic"><a class="viewcode-back" href="../../nlsic.html#nlsic.nlsic.nlsic">[docs]</a><span class="k">def</span> <span class="nf">nlsic</span><span class="p">(</span><span class="n">par</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">u</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">co</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">control</span><span class="o">=</span><span class="p">{},</span> <span class="n">e</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">eco</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">flsi</span><span class="o">=</span><span class="n">lsi</span><span class="p">,</span> <span class="o">*</span><span class="n">kargs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;solve non linear least square problem min of ||r(par,\*kargs, \*\*kwargs).res||_2</span>
+<span class="sd">    with optional inequality constraints u*par&gt;=co</span>
+<span class="sd">    and optional equality constraints e*par=eco</span>
+<span class="sd">    </span>
+<span class="sd">    *Method* sequential lsi globalized by backtracking technique. If e, eco are not None, reduce jacobian before lsi() call.</span>
+<span class="sd">    </span>
+<span class="sd">    *Notes* If function r() return an object having attribute &quot;jacobian&quot;</span>
+<span class="sd">    when cjac==True it is supposed to be equal to a matrix jacobian dr_dpar.</span>
+<span class="sd">    Else numerical derivation is used for its construction.</span>
+<span class="sd">    </span>
+<span class="sd">    :param par: initial values for parameter vector (can be in non feasible domain)</span>
+<span class="sd">        At return it contains the result vector (i.e. modified in-place).</span>
+<span class="sd">    :type par: numpy array (float64)</span>
+<span class="sd">    :param r: function calculating residual vector</span>
+<span class="sd">        by a call to r(par, cjac=True|False, \*kargs, \*\*kwargs)</span>
+<span class="sd">        where</span>
+<span class="sd">        </span>
+<span class="sd">            :par: is a current parameter vector,</span>
+<span class="sd">            :cjac: is logical indicating if we need or not a Jacobean together with residuals.</span>
+<span class="sd">            :\*kargs: positional parameters passed through to r()</span>
+<span class="sd">            :\*\*kwargs: keyword=value parameters passed through to r()</span>
+<span class="sd">            </span>
+<span class="sd">        The call to r() must return an oject having an attribute &quot;res&quot;</span>
+<span class="sd">        containing the residual vector and optionnaly an attribute &quot;jacobian&quot;</span>
+<span class="sd">        when cjac is set to TRUE.</span>
+<span class="sd">        </span>
+<span class="sd">    :type r: function</span>
+<span class="sd">    :param u: linear inequality constraint matrix in u\*par&gt;=co. Defaults to None.</span>
+<span class="sd">    :type u: numpy matrix (float64), optional</span>
+<span class="sd">    :param co: inequality constraints vector</span>
+<span class="sd">    :type co: numpy vector (float64), optional</span>
+<span class="sd">    :param controls: control parameters (=default values which is assumed if an entry is missing):</span>
+<span class="sd">        </span>
+<span class="sd">        :tolx=1.e-7: error on L2 norm of the iteration step sqrt(pt\*p).</span>
+<span class="sd">        :maxit=100: maximum of newton iterations</span>
+<span class="sd">        :btstart=1.: (0;1) starting value for backtracking</span>
+<span class="sd">        :btfrac=0.5: (0;1) by this value we diminish the step till tight up to the quadratic model of norm reduction in backtrack (bt) iterations</span>
+<span class="sd">        :btdesc=0.5: (0;1) how good we have to tight up to the quadratic model. 0-we are very relax, 1 we are very close (may need many bt iterations)</span>
+<span class="sd">        :btmaxit=15: maximum of backtrack iterations</span>
+<span class="sd">        :trace=0: print tracing information on stdout</span>
+<span class="sd">        </span>
+<span class="sd">        Defaults to empty dict {} which is equivalent to the above default values.</span>
+<span class="sd">        </span>
+<span class="sd">    :type controls: dict, optional</span>
+<span class="sd">    :param e: linear equality constraint matrix in e\*par=eco. Defaults to None.</span>
+<span class="sd">    :type e: numpy matrix (float64), optional</span>
+<span class="sd">    :param eco: equality constraints vector</span>
+<span class="sd">    :type eco: numpy vector (float64), optional</span>
+<span class="sd">    :param flsi: solution of least squares with inequality constraints. Defaults to nlsic.lsi. Can be nlsic.lsi_ln if least norm increment is required.</span>
+<span class="sd">    :type flsi: function</span>
+<span class="sd">    :param kargs: optional positional arguments to be passed through to r function</span>
+<span class="sd">    :type kargs: list, optional</span>
+<span class="sd">    :param kwargs: optional keyword=value parameters to pass through to r function</span>
+<span class="sd">    :type kwargs: dict, optional</span>
+<span class="sd">    :return: result Object with the following fields:</span>
+<span class="sd">    </span>
+<span class="sd">        :par: resulting parameter vector</span>
+<span class="sd">        :laststep: last increment after a possible back-tracking contraction</span>
+<span class="sd">        :normp: L2 norm of the last increment before back-tracking</span>
+<span class="sd">        :res: last residual vector</span>
+<span class="sd">        :prevres: previous residual vector</span>
+<span class="sd">        :indx: vector of p and z sets. indx[:nsetp] is a p-set indexes, while indx[nsetp:] is z-set indexes</span>
+<span class="sd">        :nsetp: size of p-set.</span>
+<span class="sd">        :it: number of non-linear iterations</span>
+<span class="sd">        :btit: number of back-tracking iterations at the last non linear iteration</span>
+<span class="sd">        :error: execution error code: 0 means no error occurred</span>
+<span class="sd">        :a: last Jacobean calculated</span>
+<span class="sd">        :nte: null-space basis matrix if e is provided</span>
+<span class="sd">        :mes: if error != 0, then str with informative message.</span>
+<span class="sd">        </span>
+<span class="sd">    :rtype: Object</span>
+<span class="sd">&quot;&quot;&quot;</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">par</span><span class="p">)</span>
+    <span class="n">m</span><span class="p">,</span> <span class="n">co</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">co</span><span class="p">),</span> <span class="n">cV</span><span class="p">(</span><span class="n">co</span><span class="p">))</span> <span class="k">if</span> <span class="n">co</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="p">)))</span>
+    <span class="n">par</span> <span class="o">=</span> <span class="n">cV</span><span class="p">(</span><span class="n">par</span><span class="p">)</span>
+
+    <span class="c1"># predefined controls</span>
+    <span class="n">con</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;tolx&quot;</span><span class="p">:</span> <span class="mf">1.e-7</span><span class="p">,</span> <span class="s2">&quot;maxit&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span> <span class="s2">&quot;btstart&quot;</span><span class="p">:</span> <span class="mf">1.</span><span class="p">,</span> <span class="s2">&quot;btfrac&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">&quot;btdesc&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+           <span class="s2">&quot;btmaxit&quot;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span> <span class="s2">&quot;trace&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+    <span class="n">nmsC</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">con</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="n">namc</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">control</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="n">con</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">control</span><span class="p">)</span>
+    <span class="n">con</span> <span class="o">=</span> <span class="n">Obj</span><span class="p">(</span><span class="o">**</span><span class="n">con</span><span class="p">)</span>
+
+    <span class="n">noNms</span> <span class="o">=</span> <span class="n">namc</span> <span class="o">-</span> <span class="n">nmsC</span>
+    <span class="k">if</span> <span class="n">noNms</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">nlsicError</span><span class="p">(</span><span class="s2">&quot;unknown names in control: &quot;</span><span class="p">,</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">noNms</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">e</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">et</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">eco</span> <span class="o">=</span> <span class="n">cV</span><span class="p">(</span><span class="n">eco</span><span class="p">)</span>
+    <span class="n">econstr</span> <span class="o">=</span> <span class="n">e</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">eco</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">e</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">e</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">n</span>
+    <span class="c1"># print &quot;e, eco=&quot;, e, eco</span>
+    <span class="c1"># make u matrix if u is None</span>
+    <span class="k">if</span> <span class="n">u</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
+        <span class="n">co</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">0</span><span class="p">,))</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
+    <span class="n">co</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="n">co</span><span class="p">)</span>
+    <span class="c1"># prepare indx and nsetp for nnls</span>
+    <span class="n">indx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
+    <span class="n">nsetp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">econstr</span><span class="p">:</span>
+        <span class="c1"># affine transform epar -&gt; par s.t. e*par=eco</span>
+        <span class="c1"># particular solution</span>
+        <span class="kn">from</span> <span class="nn">nlsic.lapack_ssg</span> <span class="kn">import</span> <span class="n">QR</span><span class="p">,</span> <span class="n">tri_solve</span>
+        <span class="n">et</span> <span class="o">=</span> <span class="n">QR</span><span class="p">(</span><span class="n">ar2f</span><span class="p">(</span><span class="n">et</span><span class="p">))</span>
+        <span class="n">tmp</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">e</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],))</span>
+        <span class="n">tmp</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">eco</span><span class="p">)]</span><span class="o">=</span><span class="n">tri_solve</span><span class="p">(</span><span class="n">et</span><span class="o">.</span><span class="n">qr</span><span class="p">,</span> <span class="n">eco</span><span class="p">[</span><span class="n">et</span><span class="o">.</span><span class="n">pivot</span><span class="p">],</span> <span class="n">trans</span><span class="o">=</span><span class="s1">&#39;T&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">parp</span> <span class="o">=</span> <span class="n">cV</span><span class="p">(</span><span class="n">et</span><span class="o">.</span><span class="n">qy</span><span class="p">(</span><span class="n">tmp</span><span class="p">))</span>
+        <span class="c1"># par=parp+Null(t(e))%*%epar, where epar is new parameter vector</span>
+        <span class="n">nte</span> <span class="o">=</span> <span class="n">et</span><span class="o">.</span><span class="n">Null</span><span class="p">()</span>
+        <span class="n">ue</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">nte</span><span class="p">)</span>
+        <span class="n">epar</span> <span class="o">=</span> <span class="n">nte</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">par</span><span class="o">-</span><span class="n">parp</span><span class="p">)</span>
+        <span class="n">par</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">nte</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">epar</span><span class="p">)</span><span class="o">+</span><span class="n">parp</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">nte</span><span class="o">=</span><span class="kc">None</span>
+
+    <span class="n">cou</span> <span class="o">=</span> <span class="n">co</span><span class="o">-</span><span class="n">u</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">par</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">cou</span> <span class="o">&gt;</span> <span class="mf">0.</span><span class="p">):</span>
+        <span class="c1"># project par into feasible domain</span>
+        <span class="c1"># just in case if residual function is defined only on feasible domain</span>
+        <span class="k">if</span> <span class="n">econstr</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">cV</span><span class="p">(</span><span class="n">ldp</span><span class="p">(</span><span class="n">ue</span><span class="p">,</span> <span class="n">cou</span><span class="p">))</span>
+            <span class="n">par</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">par</span><span class="o">+</span><span class="n">nte</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">cV</span><span class="p">(</span><span class="n">ldp</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">cou</span><span class="p">))</span>
+            <span class="n">par</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">par</span><span class="o">+</span><span class="n">x</span>
+
+    <span class="c1"># newton globalized iterations</span>
+    <span class="n">it</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">btit</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">converged</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="c1">#import pdb; pdb.set_trace()</span>
+    <span class="k">while</span> <span class="p">(</span><span class="ow">not</span> <span class="n">converged</span><span class="p">)</span> <span class="ow">and</span> <span class="n">it</span> <span class="o">&lt;</span> <span class="n">con</span><span class="o">.</span><span class="n">maxit</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">it</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># residual vector</span>
+            <span class="n">lres</span> <span class="o">=</span> <span class="n">r</span><span class="p">(</span><span class="n">par</span><span class="p">,</span> <span class="n">cjac</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">*</span><span class="n">kargs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">lres</span><span class="o">.</span><span class="n">res</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="o">-</span><span class="n">res</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">norb</span> <span class="o">=</span> <span class="n">norm</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+            <span class="n">norres</span> <span class="o">=</span> <span class="n">norb</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="n">con</span><span class="o">.</span><span class="n">trace</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;it=</span><span class="si">{}</span><span class="se">\t</span><span class="s2">res=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">it</span><span class="p">,</span> <span class="n">norb</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="o">-</span><span class="n">res</span>
+            <span class="n">norb</span> <span class="o">=</span> <span class="n">norres</span>
+        <span class="c1"># jacobian</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">lres</span><span class="o">.</span><span class="n">jacobian</span>
+            <span class="k">if</span> <span class="n">a</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">a</span> <span class="o">=</span> <span class="n">r</span><span class="p">(</span><span class="n">par</span><span class="p">,</span> <span class="n">cjac</span><span class="o">=</span><span class="n">TRUE</span><span class="p">,</span> <span class="o">*</span><span class="n">kargs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">jacobian</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">numdif</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">r</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">cjac</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">*</span><span class="n">kargs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">res</span><span class="p">,</span> <span class="n">par</span><span class="p">)</span>
+        <span class="c1"># solve linear ls</span>
+        <span class="k">if</span> <span class="n">econstr</span><span class="p">:</span>
+            <span class="n">ajac</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">nte</span><span class="p">)</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">flsi</span><span class="p">(</span><span class="n">ajac</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="s2">&quot;f&quot;</span><span class="p">),</span> <span class="n">b</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="s2">&quot;f&quot;</span><span class="p">),</span> <span class="n">ue</span><span class="p">,</span> <span class="n">co</span><span class="o">-</span><span class="n">u</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">par</span><span class="p">),</span>
+                     <span class="n">indx</span><span class="o">=</span><span class="n">indx</span><span class="p">,</span> <span class="n">nsetp</span><span class="o">=</span><span class="n">nsetp</span><span class="p">)</span>  <span class="c1"># newton direction</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">cV</span><span class="p">(</span><span class="n">nte</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">p</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ajac</span><span class="o">=</span><span class="n">a</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">cV</span><span class="p">(</span><span class="n">flsi</span><span class="p">(</span><span class="n">ajac</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="s2">&quot;f&quot;</span><span class="p">),</span> <span class="n">b</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="s2">&quot;f&quot;</span><span class="p">),</span> <span class="n">u</span><span class="p">,</span> <span class="n">co</span><span class="o">-</span><span class="n">u</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">par</span><span class="p">),</span>
+                     <span class="n">indx</span><span class="o">=</span><span class="n">indx</span><span class="p">,</span> <span class="n">nsetp</span><span class="o">=</span><span class="n">nsetp</span><span class="p">))</span>  <span class="c1"># newton direction</span>
+        <span class="c1"># print &quot;p=&quot;, (p).T</span>
+        <span class="c1"># print nsetp</span>
+        <span class="c1"># nsetp.flat=0</span>
+        <span class="n">normp</span> <span class="o">=</span> <span class="n">norm</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+        <span class="n">converged</span> <span class="o">=</span> <span class="p">(</span><span class="n">normp</span> <span class="o">&lt;=</span> <span class="n">con</span><span class="o">.</span><span class="n">tolx</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">converged</span><span class="p">:</span>
+            <span class="c1"># no need for backtracking at this stage</span>
+            <span class="n">laststep</span> <span class="o">=</span> <span class="n">p</span>
+            <span class="n">par</span> <span class="o">=</span> <span class="n">par</span><span class="o">+</span><span class="n">laststep</span>
+            <span class="n">it</span> <span class="o">=</span> <span class="n">it</span><span class="o">+</span><span class="mi">1</span>
+            <span class="n">btit</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">resdecr</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">r</span><span class="p">(</span><span class="n">par</span><span class="p">,</span> <span class="n">cjac</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">*</span><span class="n">kargs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">res</span>
+            <span class="n">norres</span> <span class="o">=</span> <span class="n">norm</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">con</span><span class="o">.</span><span class="n">trace</span> <span class="ow">and</span> <span class="p">(</span><span class="n">it</span> <span class="o">&lt;</span> <span class="mi">10</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">it</span> <span class="o">%</span> <span class="mi">10</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;it=</span><span class="si">{}</span><span class="se">\t</span><span class="s2">res=</span><span class="si">{}</span><span class="se">\t</span><span class="s2">normstep=</span><span class="si">{}</span><span class="se">\t</span><span class="s2">btk=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">it</span><span class="p">,</span> <span class="n">norres</span><span class="p">,</span> <span class="n">normp</span><span class="p">,</span> <span class="n">k</span><span class="o">/</span><span class="n">con</span><span class="o">.</span><span class="n">btfrac</span><span class="p">))</span>
+            <span class="k">break</span>
+        <span class="n">ap</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+        <span class="n">n2ap</span> <span class="o">=</span> <span class="n">norm2</span><span class="p">(</span><span class="n">ap</span><span class="p">)</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">btstart</span>  <span class="c1"># fraction of p</span>
+        <span class="c1"># backtrack iterations</span>
+        <span class="n">btit</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">descending</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">while</span> <span class="p">(</span><span class="ow">not</span> <span class="n">descending</span><span class="p">)</span> <span class="ow">and</span> <span class="n">btit</span> <span class="o">&lt;</span> <span class="n">con</span><span class="o">.</span><span class="n">btmaxit</span><span class="p">:</span>
+            <span class="n">laststep</span> <span class="o">=</span> <span class="n">k</span><span class="o">*</span><span class="n">p</span>
+            <span class="n">lres</span> <span class="o">=</span> <span class="n">r</span><span class="p">(</span><span class="n">par</span><span class="o">+</span><span class="n">laststep</span><span class="p">,</span> <span class="n">cjac</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">*</span><span class="n">kargs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">lres</span><span class="o">.</span><span class="n">res</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">norres</span> <span class="o">=</span> <span class="n">norm</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+            <span class="c1"># print &quot;par+%3.2f*p=&quot;%k, (par+laststep).T</span>
+            <span class="c1"># print &quot;norres=&quot;, norres</span>
+            <span class="n">scaprod</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">ap</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="p">(</span><span class="n">res</span><span class="o">+</span><span class="n">b</span><span class="p">))[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">descending</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">scaprod</span> <span class="o">&gt;=</span> <span class="mf">0.</span> <span class="ow">and</span>
+                <span class="n">sqrt</span><span class="p">(</span><span class="n">scaprod</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">con</span><span class="o">.</span><span class="n">btdesc</span><span class="o">*</span><span class="n">sqrt</span><span class="p">(</span><span class="n">n2ap</span><span class="o">*</span><span class="n">k</span><span class="p">)</span> <span class="ow">and</span>
+                <span class="n">norres</span> <span class="o">&lt;</span> <span class="n">norb</span>
+            <span class="p">)</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="n">k</span><span class="o">*</span><span class="n">con</span><span class="o">.</span><span class="n">btfrac</span>
+            <span class="n">btit</span> <span class="o">=</span> <span class="n">btit</span><span class="o">+</span><span class="mi">1</span>
+        <span class="n">par</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">par</span><span class="o">+</span><span class="n">laststep</span>
+        <span class="n">it</span> <span class="o">=</span> <span class="n">it</span><span class="o">+</span><span class="mi">1</span>
+        <span class="k">if</span> <span class="n">con</span><span class="o">.</span><span class="n">trace</span> <span class="ow">and</span> <span class="p">(</span><span class="n">it</span> <span class="o">&lt;</span> <span class="mi">10</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">it</span> <span class="o">%</span> <span class="mi">10</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;it=</span><span class="si">{}</span><span class="se">\t</span><span class="s2">res=</span><span class="si">{}</span><span class="se">\t</span><span class="s2">normstep=</span><span class="si">{}</span><span class="se">\t</span><span class="s2">btk=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">it</span><span class="p">,</span> <span class="n">norres</span><span class="p">,</span> <span class="n">normp</span><span class="p">,</span> <span class="n">k</span><span class="o">/</span><span class="n">con</span><span class="o">.</span><span class="n">btfrac</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">con</span><span class="o">.</span><span class="n">trace</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span><span class="n">it</span> <span class="o">&lt;</span> <span class="mi">10</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">it</span> <span class="o">%</span> <span class="mi">10</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;it=</span><span class="si">{}</span><span class="se">\t</span><span class="s2">res=</span><span class="si">{}</span><span class="se">\t</span><span class="s2">normstep=</span><span class="si">{}</span><span class="se">\t</span><span class="s2">btk=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">it</span><span class="p">,</span> <span class="n">norres</span><span class="p">,</span> <span class="n">normp</span><span class="p">,</span> <span class="n">k</span><span class="o">/</span><span class="n">con</span><span class="o">.</span><span class="n">btfrac</span><span class="p">))</span>
+    <span class="n">mes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">it</span> <span class="o">&gt;=</span> <span class="n">con</span><span class="o">.</span><span class="n">maxit</span><span class="p">:</span>
+        <span class="n">mes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Maximal non linear iteration number is achieved&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">btit</span> <span class="o">&gt;=</span> <span class="n">con</span><span class="o">.</span><span class="n">btmaxit</span><span class="p">:</span>
+        <span class="n">mes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;Maximal backtrack iteration number is achieved&quot;</span><span class="p">)</span>
+    <span class="c1"># restore names</span>
+    <span class="k">return</span> <span class="n">Obj</span><span class="p">(</span>
+        <span class="n">par</span><span class="o">=</span><span class="n">cV</span><span class="p">(</span><span class="n">par</span><span class="p">),</span>
+        <span class="n">laststep</span><span class="o">=</span><span class="n">cV</span><span class="p">(</span><span class="n">laststep</span><span class="p">),</span>
+        <span class="n">normp</span><span class="o">=</span><span class="n">normp</span><span class="p">,</span>
+        <span class="n">res</span><span class="o">=</span><span class="n">cV</span><span class="p">(</span><span class="n">res</span><span class="p">),</span>
+        <span class="n">prevres</span><span class="o">=-</span><span class="n">cV</span><span class="p">(</span><span class="n">b</span><span class="p">),</span>
+        <span class="n">indx</span><span class="o">=</span><span class="n">indx</span><span class="p">,</span>
+        <span class="n">nsetp</span><span class="o">=</span><span class="n">nsetp</span><span class="p">,</span>
+        <span class="n">it</span><span class="o">=</span><span class="n">it</span><span class="p">,</span>
+        <span class="n">btit</span><span class="o">=</span><span class="n">btit</span><span class="p">,</span>
+        <span class="n">error</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">a</span><span class="o">=</span><span class="n">ajac</span><span class="p">,</span>
+        <span class="n">nte</span><span class="o">=</span><span class="n">nte</span><span class="p">,</span>
+        <span class="n">mes</span><span class="o">=</span><span class="n">mes</span><span class="p">)</span></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">time</span>
+    <span class="c1"># test numdif()</span>
+
+    <span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">**</span><span class="mi">2</span><span class="o">-</span><span class="n">x</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+    <span class="c1"># print numdif(f, x)</span>
+
+    <span class="c1"># test nlsic</span>
+    <span class="k">def</span> <span class="nf">r</span><span class="p">(</span><span class="n">par</span><span class="p">,</span> <span class="n">cjac</span><span class="p">):</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">par</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="mf">0.25</span><span class="o">*</span><span class="p">(</span><span class="n">par</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span><span class="o">-</span><span class="n">x_true</span><span class="o">.</span><span class="n">ravel</span><span class="p">()))</span>
+        <span class="k">return</span> <span class="n">Obj</span><span class="p">(</span><span class="n">res</span><span class="o">=</span><span class="n">res</span><span class="p">)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="mi">500</span>
+    <span class="n">par</span> <span class="o">=</span> <span class="n">cV</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+    <span class="n">x_true</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="o">-</span><span class="n">n</span><span class="o">/</span><span class="mf">2.5</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mf">1.</span><span class="p">)</span>
+    <span class="c1"># print &quot;x_true=&quot;, x_true</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+    <span class="n">co</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+    <span class="c1"># decimal=np.finfo(float).precision-1-int(np.log10(n))</span>
+    <span class="n">decimal</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;n, decimal=&quot;</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">decimal</span><span class="p">)</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">nlsic</span><span class="p">(</span><span class="n">par</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">u</span><span class="o">=</span><span class="n">u</span><span class="p">,</span> <span class="n">co</span><span class="o">=</span><span class="n">co</span><span class="p">,</span>
+                <span class="n">control</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;trace&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;tolx&quot;</span><span class="p">:</span> <span class="mf">10.</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="n">decimal</span><span class="p">),</span> <span class="s2">&quot;maxit&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;btmaxit&quot;</span><span class="p">:</span> <span class="mi">15</span><span class="p">})</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;time for min r=&quot;</span><span class="p">,</span> <span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t</span><span class="p">)</span>
+    <span class="c1"># print ret.__dict__</span>
+    <span class="n">teq</span><span class="p">(</span><span class="n">ret</span><span class="o">.</span><span class="n">par</span><span class="o">.</span><span class="n">flat</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">x_true</span><span class="p">,</span> <span class="mf">0.</span><span class="p">)</span><span class="o">.</span><span class="n">flat</span><span class="p">,</span> <span class="n">decimal</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NLSIC 1.3.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, INRAE/INSA/CNRS.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.7.
+    </div>
+  </body>
+</html>
