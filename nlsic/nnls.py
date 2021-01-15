@@ -3,16 +3,11 @@ This module provides solvers for linear system
 with inequality constraints. Theay are based on
 nnls algorithm and software originaly designed
 and (re)written in Fortran77 by [Lawson & al, 1974].
-nnls: solve Non Negative Least Square problem
-    a*x~b, subject to x_i >= 0 for all indexes i
-ldp: solve Least Distance Problem x~0 subject
-    to u*x>=c. LDP is solved by reducing this problem
-    to nnls problem.
-lsi: solve Least Square problem with Inequality constraints
-    a*x~b subject to u*x>=c. LSI problem is solved by
-    reducing it to ldp problem.
-If matrices a and u are F-contiguous,
-they can be modified "in place".
+
+:nnls: solve Non Negative Least Square problem a*x~b, subject to x_i >= 0 for all indexes i
+:ldp: solve Least Distance Problem x~0 subject to u*x>=c. LDP is solved by reducing this problem to nnls problem.
+:lsi: solve Least Square problem with Inequality constraints a*x~b subject to u*x>=c. LSI problem is solved by reducing it to ldp problem. If matrices a and u are F-contiguous, they can be modified "in place".
+:lsi_ln: the same as lsi but find least norm solution for rank-deficient matrix a.
 """
 import numpy as np
 teq = np.testing.assert_array_almost_equal
@@ -38,19 +33,17 @@ def cV(x):
     return np.asmatrix(x).reshape(len(x), -1)
 def nnls(a, b, indx=None, nsetp=None):
     """wrapper for nnlsf call
-    a: m x n real matrix, m >= n
-    b: m x 1
-    Return an object with fields:
-    x: solution vetor of length n
-    rnorm: norm of residual ax-b
-    w: the dual solution vector of length n.
-        w will satisfy w[i] = 0.  
-        for all i in set p  and w[i] <= 0. for all i in set z ,
-    indx: p and z set.
-        indx[:nsetp] is a p-set indexes,
-        while indx[nsetp:] is z-set indexes
-    nsetp: p and z set separator in indx
-    """
+    
+    :param a: m x n real matrix, m >= n
+    :param b: m x 1
+    :return: an object with fields:
+    
+        :x: solution vector of length n
+        :rnorm: norm of residual ax-b
+        :w: the dual solution vector of length n. w will satisfy w[i] = 0. for all i in set p  and w[i] <= 0. for all i in set z ,
+        :indx: p and z set. indx[:nsetp] is a p-set indexes, while indx[nsetp:] is z-set indexes
+        :nsetp: p and z set separator in indx
+"""
     n = a.shape[1]
     if True or (indx is None or nsetp is None):
         # till weird bug in intializing nnlsr is not solved go always here

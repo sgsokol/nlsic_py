@@ -12,7 +12,7 @@ Welcome to NLSIC's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   API documentation <nlsic>
+   API documentation <modules>
 
 
 Indices and tables

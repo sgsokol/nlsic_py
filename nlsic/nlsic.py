@@ -14,6 +14,7 @@ import nlsic.lapack_ssg as las
 QR = las.QR
 from nlsic.nnls import lsi, lsi_ln, ldp
 class nlsicError(Exception):
+    "custom error class"
     pass
 class Obj:
     """
@@ -47,58 +48,80 @@ def numdif(f, x, *kargs, **kwrags):
         jac[:, j].flat = (jac[:, j]-cV(f(xh)))/(h+h)
     return jac
 def norm2(x):
+    "L2 vector norm"
     return np.dot(x.flat, x.flat)
 def nlsic(par, r, u=None, co=None, control={}, e=None, eco=None, flsi=lsi, *kargs, **kwargs):
-    """
-    solve non linear least square problem min of r(par,*kargs, **kwargs).res
+    """solve non linear least square problem min of ||r(par,\*kargs, \*\*kwargs).res||_2
     with optional inequality constraints u*par>=co
     and optional equality constraints e*par=eco
     
-    Method:
-    sequential lsi globalized by backtracking technique.
-    If e, eco are not None, reduce jacobian before lsi() call.
-    Notes:
-    If function r() return an object having attribute "jacobian"
+    *Method* sequential lsi globalized by backtracking technique. If e, eco are not None, reduce jacobian before lsi() call.
+    
+    *Notes* If function r() return an object having attribute "jacobian"
     when cjac==True it is supposed to be equal to a matrix jacobian dr_dpar.
     Else numerical derivation is used for its construction.
     
-    Parameters
-    ----------
-    par : numpy array (float64)
-        initial values for parameter vector (can be in non feasible domain)
-        At return it contains the result vector.
-    r : function
-        function calculating residual vector
-        by a call to r(par, cjac=T|False, *kargs, **kwargs)
-        where par is a current parameter vector,
-        cjac is logical indicating if we need or not a Jacobean
-        with residials.
-        cjac is set to TRUE if jacobian is required.
-        *kargs, **kwargs are params passed through to r()
+    :param par: initial values for parameter vector (can be in non feasible domain)
+        At return it contains the result vector (i.e. modified in-place).
+    :type par: numpy array (float64)
+    :param r: function calculating residual vector
+        by a call to r(par, cjac=True|False, \*kargs, \*\*kwargs)
+        where
+        
+            :par: is a current parameter vector,
+            :cjac: is logical indicating if we need or not a Jacobean together with residuals.
+            :\*kargs: positional parameters passed through to r()
+            :\*\*kwargs: keyword=value parameters passed through to r()
+            
         The call to r() must return an oject having an attribute "res"
         containing the residual vector and optionnaly an attribute "jacobian"
         when cjac is set to TRUE.
-    u : numpy matrix (float64)
-        linear constraint matrix in u*par>=co
-    co : numpy vector (float64)
-        constraint vector
-    controls : dict
-        (=by default values):
         
-        - tolx=1.e-7 error on l2 norm of the iteration step sqrt(pt*p).
-        - maxit=100 maximum of newton iterations
-        - btstart=1. (0;1) starting value for backtracking
-        - btfrac=0.5 (0;1) by this value we diminish the step till tight up
-        to the quadratic model of norm reduction in backtrack (bt) iterations
-        - btdesc=0.5 (0;1) how good we have to tight up to the quadratic model
-        0-we are very relaxe, 1 we are very close (may need many bt iterations)
-        - btmaxit=15 maximum of backtrack iterations
-        - trace=0 print tracing information on stdout
-    Returns
-    -------
-    dict
-        par:, <some convergence information>
-        NB. par is modified in place
+    :type r: function
+    :param u: linear inequality constraint matrix in u\*par>=co. Defaults to None.
+    :type u: numpy matrix (float64), optional
+    :param co: inequality constraints vector
+    :type co: numpy vector (float64), optional
+    :param controls: control parameters (=default values which is assumed if an entry is missing):
+        
+        :tolx=1.e-7: error on L2 norm of the iteration step sqrt(pt\*p).
+        :maxit=100: maximum of newton iterations
+        :btstart=1.: (0;1) starting value for backtracking
+        :btfrac=0.5: (0;1) by this value we diminish the step till tight up to the quadratic model of norm reduction in backtrack (bt) iterations
+        :btdesc=0.5: (0;1) how good we have to tight up to the quadratic model. 0-we are very relax, 1 we are very close (may need many bt iterations)
+        :btmaxit=15: maximum of backtrack iterations
+        :trace=0: print tracing information on stdout
+        
+        Defaults to empty dict {} which is equivalent to the above default values.
+        
+    :type controls: dict, optional
+    :param e: linear equality constraint matrix in e\*par=eco. Defaults to None.
+    :type e: numpy matrix (float64), optional
+    :param eco: equality constraints vector
+    :type eco: numpy vector (float64), optional
+    :param flsi: solution of least squares with inequality constraints. Defaults to nlsic.lsi. Can be nlsic.lsi_ln if least norm increment is required.
+    :type flsi: function
+    :param kargs: optional positional arguments to be passed through to r function
+    :type kargs: list, optional
+    :param kwargs: optional keyword=value parameters to pass through to r function
+    :type kwargs: dict, optional
+    :return: result Object with the following fields:
+    
+        :par: resulting parameter vector
+        :laststep: last increment after a possible back-tracking contraction
+        :normp: L2 norm of the last increment before back-tracking
+        :res: last residual vector
+        :prevres: previous residual vector
+        :indx: vector of p and z sets. indx[:nsetp] is a p-set indexes, while indx[nsetp:] is z-set indexes
+        :nsetp: size of p-set.
+        :it: number of non-linear iterations
+        :btit: number of back-tracking iterations at the last non linear iteration
+        :error: execution error code: 0 means no error occurred
+        :a: last Jacobean calculated
+        :nte: null-space basis matrix if e is provided
+        :mes: if error != 0, then str with informative message.
+        
+    :rtype: Object
 """
     n = len(par)
     m, co = (len(co), cV(co)) if co is not None else (0, np.empty((0, n)))

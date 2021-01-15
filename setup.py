@@ -60,6 +60,6 @@ if __name__ == '__main__':
         author = 'Serguei Sokol',
         author_email = 'sokol@insa-toulouse.fr',
         packages = ['nlsic'],
-        py_modules = ['nlsic', 'nnls', 'lapack_ssg'],
+        py_modules = ['nlsic.nnls', 'nlsic.lapack_ssg'],
         **d,
     )

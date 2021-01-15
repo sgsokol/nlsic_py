@@ -2,6 +2,9 @@ nlsic
 =====
 
 .. toctree::
-   :maxdepth: 4
+    :maxdepth: 4
 
-   nlsic
+    nlsic
+    nnls_f77
+    nnls_f90
+    fpylapack
