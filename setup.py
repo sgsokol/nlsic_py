@@ -45,7 +45,7 @@ def configuration(parent_package='', top_path=None):
 
 if __name__ == '__main__':
     d = configuration(top_path='', parent_package='nlsic')
-    print("d=", d)
+    #print("d=", d)
 #    setuptools.setup(
     nps(
         name = 'nlsic',
@@ -57,6 +57,7 @@ if __name__ == '__main__':
         keywords = ['least squares'],
         license = 'GNU General Public License v2 or later (GPLv2+)',
         long_description = long_description,
+        long_description_content_type = 'text/x-rst',
         author = 'Serguei Sokol',
         author_email = 'sokol@insa-toulouse.fr',
         packages = ['nlsic'],
