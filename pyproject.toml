@@ -1,0 +1,20 @@
+[build-system]
+build-backend = 'mesonpy'
+requires = ['meson-python', 'numpy']
+
+[project]
+name = "nlsic"
+dynamic = ["version"]
+authors = [{name = "Serguei Sokol", email = "sokol@insa-toulouse.fr"}]
+description = "Non-linear Least Squares with Inequality Constraints"
+requires-python = ">=3"
+keywords = ['least squares']
+license = 'GNU General Public License v2 or later (GPLv2+)'
+
+[tool.poetry]
+packages = [
+    { include = "nlsic", from = "nlsic" },
+]
+
+[project.urls]
+Repository = 'https://github.com/sgsokol/nlsic_py/'

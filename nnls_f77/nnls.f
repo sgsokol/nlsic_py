@@ -202,8 +202,8 @@ c     integer INDEX(N)
 c     double precision A(MDA,N), B(M), W(N), X(N), ZZ(M)
       integer INDEX(N)
       double precision A(MDA,N), B(M), W(N), X(N), ZZ(M)
-      double precision ALPHA, ASAVE, CC, DIFF, DUMMY, FACTOR, RNORM
-      double precision SM, SS, T, TEMP, TWO, UNORM, UP, WMAX
+      double precision ALPHA, ASAVE, CC, DIFF, DUMMY, DUMMY1(1), FACTOR
+      double precision RNORM, SM, SS, T, TEMP, TWO, UNORM, UP, WMAX
       double precision ZERO, ZTEST
       parameter(FACTOR = 0.01d0)
       parameter(TWO = 2.0d0, ZERO = 0.0d0)
@@ -277,7 +277,7 @@ C     BEGIN THE TRANSFORMATION AND CHECK NEW DIAGONAL ELEMENT TO AVOID
 C     NEAR LINEAR DEPENDENCE.
 C
       ASAVE=A(NPP1,J)
-      CALL H12 (1,NPP1,NPP1+1,M,A(1,J),1,UP,DUMMY,1,1,0)
+      CALL H12 (1,NPP1,NPP1+1,M,A(1,J),1,UP,DUMMY1,1,1,0)
       UNORM=ZERO
       IF (NSETP .ne. 0) then
           DO 90 L=1,NSETP
