@@ -12,7 +12,7 @@ and (re)written in Fortran77 by [Lawson & al, 1974].
 import numpy as np
 teq = np.testing.assert_array_almost_equal
 ar2f = np.asfortranarray
-mat = np.mat
+mat = np.asmatrix
 norm = np.linalg.norm
 any = any
 

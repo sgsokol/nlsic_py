@@ -1,13 +1,14 @@
 [build-system]
 build-backend = 'mesonpy'
-requires = ['meson-python', 'numpy']
+requires = ['meson-python', 'numpy>=2']
 
 [project]
 name = "nlsic"
 dynamic = ["version"]
 authors = [{name = "Serguei Sokol", email = "sokol@insa-toulouse.fr"}]
 description = "Non-linear Least Squares with Inequality Constraints"
-requires-python = ">=3"
+requires-python = ">=3.8"
+dependencies = ["numpy>=2"]
 keywords = ['least squares']
 license = 'GNU General Public License v2 or later (GPLv2+)'
 
