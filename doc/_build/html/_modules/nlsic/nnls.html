@@ -1,31 +1,20 @@
+<!DOCTYPE html>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en" data-content_root="../../">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>nlsic.nnls &#8212; NLSIC 1.3.4 documentation</title>
-    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../../',
-        VERSION:     '1.3.4',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
-    <script type="text/javascript" src="../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>nlsic.nnls &#8212; NLSIC 1.3.6 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/classic.css?v=514cf933" />
+    
+    <script src="../../_static/documentation_options.js?v=70d8fd07"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
-  </head>
-  <body>
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -35,8 +24,9 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NLSIC 1.3.4 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">NLSIC 1.3.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">nlsic.nnls</a></li> 
       </ul>
     </div>  
 
@@ -60,27 +50,38 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="n">teq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_array_almost_equal</span>
 <span class="n">ar2f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asfortranarray</span>
-<span class="n">mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mat</span>
+<span class="n">mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asmatrix</span>
 <span class="n">norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span>
 <span class="nb">any</span> <span class="o">=</span> <span class="nb">any</span>
 
 <span class="kn">from</span> <span class="nn">nlsic.lapack_ssg</span> <span class="kn">import</span> <span class="n">QR</span><span class="p">,</span> <span class="n">ls_solve</span><span class="p">,</span> <span class="n">tri_solve</span>
 <span class="kn">from</span> <span class="nn">nlsic.nnls_f77</span> <span class="kn">import</span> <span class="n">nnlsr</span>
 <span class="kn">from</span> <span class="nn">nlsic.nnls_f90</span> <span class="kn">import</span> <span class="n">nnls</span> <span class="k">as</span> <span class="n">nnlsf</span>
-<div class="viewcode-block" id="Obj"><a class="viewcode-back" href="../../nlsic.html#nlsic.nnls.Obj">[docs]</a><span class="k">class</span> <span class="nc">Obj</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Obj">
+<a class="viewcode-back" href="../../nlsic.html#nlsic.nnls.Obj">[docs]</a>
+<span class="k">class</span> <span class="nc">Obj</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    tarnsform a dictionnary into object to allow access like obj.field</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
-<div class="viewcode-block" id="nnlsError"><a class="viewcode-back" href="../../nlsic.html#nlsic.nnls.nnlsError">[docs]</a><span class="k">class</span> <span class="nc">nnlsError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+
+<div class="viewcode-block" id="nnlsError">
+<a class="viewcode-back" href="../../nlsic.html#nlsic.nnls.nnlsError">[docs]</a>
+<span class="k">class</span> <span class="nc">nnlsError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="k">pass</span></div>
-<div class="viewcode-block" id="cV"><a class="viewcode-back" href="../../nlsic.html#nlsic.nnls.cV">[docs]</a><span class="k">def</span> <span class="nf">cV</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;converts x to column vector (as matrix with one column)&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="cV">
+<a class="viewcode-back" href="../../nlsic.html#nlsic.nnls.cV">[docs]</a>
+<span class="k">def</span> <span class="nf">cV</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;converts x to column vector (as matrix with one column)&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asmatrix</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span></div>
-<div class="viewcode-block" id="nnls"><a class="viewcode-back" href="../../nlsic.html#nlsic.nnls.nnls">[docs]</a><span class="k">def</span> <span class="nf">nnls</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">indx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nsetp</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;wrapper for nnlsf call</span>
+
+<div class="viewcode-block" id="nnls">
+<a class="viewcode-back" href="../../nlsic.html#nlsic.nnls.nnls">[docs]</a>
+<span class="k">def</span> <span class="nf">nnls</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">indx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nsetp</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;wrapper for nnlsf call</span>
 <span class="sd">    </span>
 <span class="sd">    :param a: m x n real matrix, m &gt;= n</span>
 <span class="sd">    :param b: m x 1</span>
@@ -112,8 +113,11 @@
             <span class="s2">&quot;Iteration count exceeded.  more than 3*n iterations.&quot;</span><span class="p">)</span>
     <span class="n">ret</span><span class="o">.</span><span class="n">indx</span> <span class="o">-=</span> <span class="mi">1</span>
     <span class="k">return</span> <span class="n">ret</span></div>
-<div class="viewcode-block" id="ldp"><a class="viewcode-back" href="../../nlsic.html#nlsic.nnls.ldp">[docs]</a><span class="k">def</span> <span class="nf">ldp</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">co</span><span class="p">,</span> <span class="n">indx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nsetp</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;solve Least Distance Problem: min(x**2) subject to u*x&gt;=co</span>
+
+<div class="viewcode-block" id="ldp">
+<a class="viewcode-back" href="../../nlsic.html#nlsic.nnls.ldp">[docs]</a>
+<span class="k">def</span> <span class="nf">ldp</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">co</span><span class="p">,</span> <span class="n">indx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nsetp</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;solve Least Distance Problem: min(x**2) subject to u*x&gt;=co</span>
 <span class="sd">    by reducing it to nnls problem.</span>
 <span class="sd">    Params:</span>
 <span class="sd">    u - m x n real matrix, m &lt;= n, u is of full rank</span>
@@ -138,8 +142,11 @@
         <span class="k">raise</span> <span class="n">nnlsError</span><span class="p">(</span><span class="s2">&quot;Constraints are unfeasible&quot;</span><span class="p">)</span>
     <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">resnnls</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">r</span><span class="p">[:</span><span class="n">n</span><span class="p">]</span><span class="o">/</span><span class="p">((</span><span class="mf">1.</span><span class="o">-</span><span class="n">r</span><span class="p">[</span><span class="n">n</span><span class="p">]))</span></div>
-<div class="viewcode-block" id="lsi"><a class="viewcode-back" href="../../nlsic.html#nlsic.nnls.lsi">[docs]</a><span class="k">def</span> <span class="nf">lsi</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">u</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">co</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">indx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nsetp</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="lsi">
+<a class="viewcode-back" href="../../nlsic.html#nlsic.nnls.lsi">[docs]</a>
+<span class="k">def</span> <span class="nf">lsi</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">u</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">co</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">indx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nsetp</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    solve linear Least Square problem (min ||a*x-b||)</span>
 <span class="sd">    subject to Inequalities u*x&gt;=co by reducing it to LDP problem</span>
 <span class="sd">    Return x</span>
@@ -175,8 +182,11 @@
     <span class="c1"># if any(cou&gt;0.):</span>
     <span class="c1">#    x=x+ldp(u, cou);</span>
     <span class="k">return</span> <span class="n">x</span></div>
-<div class="viewcode-block" id="lsi_ln"><a class="viewcode-back" href="../../nlsic.html#nlsic.nnls.lsi_ln">[docs]</a><span class="k">def</span> <span class="nf">lsi_ln</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">u</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">co</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">indx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nsetp</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="lsi_ln">
+<a class="viewcode-back" href="../../nlsic.html#nlsic.nnls.lsi_ln">[docs]</a>
+<span class="k">def</span> <span class="nf">lsi_ln</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">u</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">co</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">indx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nsetp</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    solve linear Least Square problem (min ||a*x-b||)</span>
 <span class="sd">    subject to Inequalities u*x&gt;=co by reducing it to LDP problem</span>
 <span class="sd">    If matrix a is not of full rank, a least norm solution is provided.</span>
@@ -236,6 +246,7 @@
     <span class="c1"># if any(cou&gt;0.):</span>
     <span class="c1">#    x=x+ldp(u, cou);</span>
     <span class="k">return</span> <span class="n">x</span></div>
+
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">time</span>
     <span class="n">n</span> <span class="o">=</span> <span class="mi">50</span>
@@ -295,21 +306,22 @@
     <span class="n">teq</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x_true</span><span class="p">,</span> <span class="n">decimal</span><span class="p">)</span>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
     </form>
+    </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -323,13 +335,14 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NLSIC 1.3.4 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">NLSIC 1.3.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">nlsic.nnls</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2021, INRAE/INSA/CNRS.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.7.
+    &#169; Copyright 2021, INRAE/INSA/CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
     </div>
   </body>
 </html>

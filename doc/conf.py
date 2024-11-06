@@ -19,9 +19,10 @@
 #
 import os
 import sys
+from pathlib import Path
 #sys.path.insert(0, os.path.abspath('/home/sokol/.local/lib/python3.7/site-packages'))
 #sys.path.insert(0, '..')
-sys.path.insert(0, '~/.local/lib/python3.7/site-packages/')
+sys.path.insert(0, '~/.local/lib/python'+'.'.join(map(str, sys.version_info[:2]))+'/site-packages/')
 
 
 
@@ -61,8 +62,7 @@ author = 'Serguei Sokol'
 # built documents.
 #
 # The short X.Y version.
-with open("../version.txt", "r") as f:
-    fullversion = f.read().rstrip()
+fullversion = (Path(__file__).parent.parent / "version.txt").read_text().rstrip()
 version = ".".join(fullversion.split(".")[:2])
 # The full version, including alpha/beta/rc tags.
 release = fullversion
@@ -72,7 +72,7 @@ release = fullversion
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = 'en'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.

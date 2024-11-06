@@ -1,31 +1,20 @@
+<!DOCTYPE html>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en" data-content_root="../../">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>nlsic.lapack_ssg &#8212; NLSIC 1.3.4 documentation</title>
-    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../../',
-        VERSION:     '1.3.4',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
-    <script type="text/javascript" src="../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>nlsic.lapack_ssg &#8212; NLSIC 1.3.6 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/classic.css?v=514cf933" />
+    
+    <script src="../../_static/documentation_options.js?v=70d8fd07"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
-  </head>
-  <body>
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -35,8 +24,9 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NLSIC 1.3.4 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">NLSIC 1.3.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">nlsic.lapack_ssg</a></li> 
       </ul>
     </div>  
 
@@ -50,12 +40,20 @@
 <span class="n">ar2f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asfortranarray</span>
 <span class="kn">import</span> <span class="nn">nlsic.fpylapack</span> <span class="k">as</span> <span class="nn">la</span>
 <span class="c1"># print fpylapack.__doc__</span>
-<div class="viewcode-block" id="isar"><a class="viewcode-back" href="../../nlsic.html#nlsic.lapack_ssg.isar">[docs]</a><span class="k">def</span> <span class="nf">isar</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<div class="viewcode-block" id="isar">
+<a class="viewcode-back" href="../../nlsic.html#nlsic.lapack_ssg.isar">[docs]</a>
+<span class="k">def</span> <span class="nf">isar</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span></div>
-<div class="viewcode-block" id="lapack_ssg"><a class="viewcode-back" href="../../nlsic.html#nlsic.lapack_ssg.lapack_ssg">[docs]</a><span class="k">class</span> <span class="nc">lapack_ssg</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+
+<div class="viewcode-block" id="lapack_ssg">
+<a class="viewcode-back" href="../../nlsic.html#nlsic.lapack_ssg.lapack_ssg">[docs]</a>
+<span class="k">class</span> <span class="nc">lapack_ssg</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="k">pass</span></div>
-<div class="viewcode-block" id="QR"><a class="viewcode-back" href="../../nlsic.html#nlsic.lapack_ssg.QR">[docs]</a><span class="k">class</span> <span class="nc">QR</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;QR class for storing and dealing with QR decomposition by lapack.</span>
+
+<div class="viewcode-block" id="QR">
+<a class="viewcode-back" href="../../nlsic.html#nlsic.lapack_ssg.QR">[docs]</a>
+<span class="k">class</span> <span class="nc">QR</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;QR class for storing and dealing with QR decomposition by lapack.</span>
 <span class="sd">    Input matrix a and right hand side b are modified by QR() and solve()</span>
 <span class="sd">    respectivly if they are in fortran storage else a copy is made.</span>
 <span class="sd">    If you need just to solve a full column rank, overdetermined</span>
@@ -74,8 +72,10 @@
         <span class="c1"># packed upper triangular</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rp</span> <span class="o">=</span> <span class="n">ar2f</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">qr</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">tri</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ncol</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nrow</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)])</span>
 
-<div class="viewcode-block" id="QR.Q"><a class="viewcode-back" href="../../nlsic.html#nlsic.lapack_ssg.QR.Q">[docs]</a>    <span class="k">def</span> <span class="nf">Q</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;get Q matrix from QR form returned by lapack&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="QR.Q">
+<a class="viewcode-back" href="../../nlsic.html#nlsic.lapack_ssg.QR.Q">[docs]</a>
+    <span class="k">def</span> <span class="nf">Q</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;get Q matrix from QR form returned by lapack&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span>
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
@@ -84,8 +84,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">q</span> <span class="o">=</span> <span class="n">q</span>
         <span class="k">return</span> <span class="n">q</span></div>
 
-<div class="viewcode-block" id="QR.Qc"><a class="viewcode-back" href="../../nlsic.html#nlsic.lapack_ssg.QR.Qc">[docs]</a>    <span class="k">def</span> <span class="nf">Qc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;get _complete_ (m x m) Q matrix from QR form returned by lapack&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="QR.Qc">
+<a class="viewcode-back" href="../../nlsic.html#nlsic.lapack_ssg.QR.Qc">[docs]</a>
+    <span class="k">def</span> <span class="nf">Qc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;get _complete_ (m x m) Q matrix from QR form returned by lapack&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">qc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">qc</span>
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
@@ -97,8 +100,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">qc</span> <span class="o">=</span> <span class="n">qc</span>
         <span class="k">return</span> <span class="n">qc</span></div>
 
-<div class="viewcode-block" id="QR.R"><a class="viewcode-back" href="../../nlsic.html#nlsic.lapack_ssg.QR.R">[docs]</a>    <span class="k">def</span> <span class="nf">R</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;get R matrix from QR form returned by lapack&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="QR.R">
+<a class="viewcode-back" href="../../nlsic.html#nlsic.lapack_ssg.QR.R">[docs]</a>
+    <span class="k">def</span> <span class="nf">R</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;get R matrix from QR form returned by lapack&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">r</span>
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
@@ -107,7 +113,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">r</span> <span class="o">=</span> <span class="n">r</span>
         <span class="k">return</span> <span class="n">r</span></div>
 
-<div class="viewcode-block" id="QR.solve"><a class="viewcode-back" href="../../nlsic.html#nlsic.lapack_ssg.QR.solve">[docs]</a>    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="QR.solve">
+<a class="viewcode-back" href="../../nlsic.html#nlsic.lapack_ssg.QR.solve">[docs]</a>
+    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">b</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mat</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nrow</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
         <span class="n">s</span> <span class="o">=</span> <span class="n">la</span><span class="o">.</span><span class="n">dtrtrs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">qr</span><span class="p">,</span> <span class="n">la</span><span class="o">.</span><span class="n">dormqr</span><span class="p">(</span>
@@ -116,25 +125,38 @@
         <span class="n">x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pivot</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">s</span>
         <span class="k">return</span> <span class="n">x</span></div>
 
-<div class="viewcode-block" id="QR.qy"><a class="viewcode-back" href="../../nlsic.html#nlsic.lapack_ssg.QR.qy">[docs]</a>    <span class="k">def</span> <span class="nf">qy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;multiply Q*y (y is modified in place if F-contiguous&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="QR.qy">
+<a class="viewcode-back" href="../../nlsic.html#nlsic.lapack_ssg.QR.qy">[docs]</a>
+    <span class="k">def</span> <span class="nf">qy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;multiply Q*y (y is modified in place if F-contiguous&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">la</span><span class="o">.</span><span class="n">dormqr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">qr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tau</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">trans</span><span class="o">=</span><span class="s1">&#39;N&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="QR.qty"><a class="viewcode-back" href="../../nlsic.html#nlsic.lapack_ssg.QR.qty">[docs]</a>    <span class="k">def</span> <span class="nf">qty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;multiply Qt*y&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="QR.qty">
+<a class="viewcode-back" href="../../nlsic.html#nlsic.lapack_ssg.QR.qty">[docs]</a>
+    <span class="k">def</span> <span class="nf">qty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;multiply Qt*y&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">la</span><span class="o">.</span><span class="n">dormqr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">qr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tau</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">trans</span><span class="o">=</span><span class="s1">&#39;T&#39;</span><span class="p">)[:</span><span class="bp">self</span><span class="o">.</span><span class="n">ncol</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="QR.Null"><a class="viewcode-back" href="../../nlsic.html#nlsic.lapack_ssg.QR.Null">[docs]</a>    <span class="k">def</span> <span class="nf">Null</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Claculate basis (column vectors) of Null space of a.T (nat)</span>
+
+<div class="viewcode-block" id="QR.Null">
+<a class="viewcode-back" href="../../nlsic.html#nlsic.lapack_ssg.QR.Null">[docs]</a>
+    <span class="k">def</span> <span class="nf">Null</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Claculate basis (column vectors) of Null space of a.T (nat)</span>
 <span class="sd">        such that a.T*nat=0. rank(nat)=nrow(a)-rank(a)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">null</span>
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">null</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Qc</span><span class="p">()[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">:])</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">null</span></div></div>
-<div class="viewcode-block" id="ls_solve"><a class="viewcode-back" href="../../nlsic.html#nlsic.lapack_ssg.ls_solve">[docs]</a><span class="k">def</span> <span class="nf">ls_solve</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">null</span></div>
+</div>
+
+<div class="viewcode-block" id="ls_solve">
+<a class="viewcode-back" href="../../nlsic.html#nlsic.lapack_ssg.ls_solve">[docs]</a>
+<span class="k">def</span> <span class="nf">ls_solve</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wraper for lapack dgels routine.</span>
 <span class="sd">    Solve over- or under-determined linear system a*x=b by QR or LR decomposition</span>
 <span class="sd">    return x which has dimensions nrow(x)==ncol(a) and ncol(x)==ncol(b).</span>
@@ -149,13 +171,17 @@
 <span class="sd">    during f2py compiling) so the original a and b are _not_ modified&quot;&quot;&quot;</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">la</span><span class="o">.</span><span class="n">dgels</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">x</span><span class="p">[:</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span></div>
-<div class="viewcode-block" id="tri_solve"><a class="viewcode-back" href="../../nlsic.html#nlsic.lapack_ssg.tri_solve">[docs]</a><span class="k">def</span> <span class="nf">tri_solve</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">uplo</span><span class="o">=</span><span class="s1">&#39;U&#39;</span><span class="p">,</span> <span class="n">trans</span><span class="o">=</span><span class="s1">&#39;N&#39;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Solve triangular system a*x=b or at*x=b (trans=&#39;N&#39; or &#39;T&#39;)</span>
+
+<div class="viewcode-block" id="tri_solve">
+<a class="viewcode-back" href="../../nlsic.html#nlsic.lapack_ssg.tri_solve">[docs]</a>
+<span class="k">def</span> <span class="nf">tri_solve</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">uplo</span><span class="o">=</span><span class="s1">&#39;U&#39;</span><span class="p">,</span> <span class="n">trans</span><span class="o">=</span><span class="s1">&#39;N&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Solve triangular system a*x=b or at*x=b (trans=&#39;N&#39; or &#39;T&#39;)</span>
 <span class="sd">    The matrix a can represent upper or lower triangular system (uplo=&#39;U&#39; or &#39;L&#39;)</span>
 <span class="sd">    Other part of rectangular matrix a is not referenced.</span>
 <span class="sd">    b is modified &quot;in place&quot; if it is F-contiguous.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">la</span><span class="o">.</span><span class="n">dtrtrs</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">uplo</span><span class="o">=</span><span class="n">uplo</span><span class="p">,</span> <span class="n">trans</span><span class="o">=</span><span class="n">trans</span><span class="p">)</span></div>
+
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">time</span>
     <span class="n">n</span> <span class="o">=</span> <span class="mi">100</span>
@@ -194,21 +220,22 @@
     <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_array_almost_equal</span><span class="p">(</span><span class="n">QR</span><span class="p">(</span><span class="n">na</span><span class="p">)</span><span class="o">.</span><span class="n">rank</span><span class="p">,</span> <span class="n">qa</span><span class="o">.</span><span class="n">nrow</span><span class="o">-</span><span class="n">qa</span><span class="o">.</span><span class="n">rank</span><span class="p">,</span> <span class="n">decimal</span><span class="p">)</span>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
     </form>
+    </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -222,13 +249,14 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NLSIC 1.3.4 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">NLSIC 1.3.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">nlsic.lapack_ssg</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2021, INRAE/INSA/CNRS.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.7.
+    &#169; Copyright 2021, INRAE/INSA/CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
     </div>
   </body>
 </html>
