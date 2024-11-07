@@ -1,7 +1,7 @@
 project(
     'nlsic',
     ['c', 'fortran'],
-    version: run_command('cat', 'version.txt', check: true).stdout().strip(),
+    version: configure_file(input: 'version.txt', output: '-', copy: true),
 )
 
 py = import('python').find_installation(pure: false)
