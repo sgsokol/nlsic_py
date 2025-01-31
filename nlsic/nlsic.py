@@ -34,7 +34,7 @@ def numdif(f, x, *kargs, **kwrags):
     eps2 = np.finfo(float).eps
     eps = sqrt(eps2)
     n = len(x)
-    xh = np.empty(n, dtype=np.float)
+    xh = np.empty(n, dtype='d')
     for j in range(n):
         h = x[j]*eps
         h = eps if h <= eps2 else h
@@ -42,7 +42,7 @@ def numdif(f, x, *kargs, **kwrags):
         xh[j] += h
         fh = f(xh)
         if j == 0:
-            jac = np.mat(np.empty((len(fh), n))).copy("f")
+            jac = np.asmatrix(np.empty((len(fh), n))).copy("f")
         jac[:, j].flat = fh
         xh[j] -= h+h
         jac[:, j].flat = (jac[:, j]-cV(f(xh)))/(h+h)
@@ -150,8 +150,8 @@ def nlsic(par, r, u=None, co=None, control={}, e=None, eco=None, flsi=lsi, *karg
     u = np.matrix(u)
     co = np.matrix(co)
     # prepare indx and nsetp for nnls
-    indx = np.empty(m, dtype=np.int)
-    nsetp = np.zeros(1, dtype=np.int)
+    indx = np.empty(m, dtype=np.int32)
+    nsetp = np.zeros(1, dtype=np.int32)
     if econstr:
         # affine transform epar -> par s.t. e*par=eco
         # particular solution
@@ -302,8 +302,8 @@ if __name__ == "__main__":
     par = cV(np.zeros(n))
     x_true = (np.arange(n)-n/2.5)/(n+1.)
     # print "x_true=", x_true
-    u = np.eye(n, dtype=np.float)
-    co = np.zeros((n, 1), dtype=np.float)
+    u = np.eye(n, dtype='d')
+    co = np.zeros((n, 1), dtype='d')
     # decimal=np.finfo(float).precision-1-int(np.log10(n))
     decimal = 4
     print("n, decimal=", n, decimal)

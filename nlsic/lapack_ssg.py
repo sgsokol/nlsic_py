@@ -64,7 +64,7 @@ class QR:
             b = np.mat(np.eye(self.nrow)).T
         s = la.dtrtrs(self.qr, la.dormqr(
             self.qr, self.tau, b, trans='T'))[:self.ncol, :]
-        x = np.empty(s.shape, dtype=np.float)
+        x = np.empty(s.shape, dtype='d')
         x[self.pivot, :] = s
         return x
 

@@ -1,0 +1,5 @@
+BR=--break-system-packages
+v=$(cat version.txt)
+python3.12 -m build
+python3.12 -m pip install dist/nlsic-$v.tar.gz --user $BR
+python3.12 -m twine upload dist/nlsic-$v.tar.gz
